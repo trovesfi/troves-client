@@ -11,7 +11,7 @@ const RaffleTimer: React.FC = () => {
   });
 
   useEffect(() => {
-    const endDate = new Date('2024-11-10T23:59:59');
+    const endDate = new Date('2024-11-11T23:59:59');
 
     const updateTimer = () => {
       const now = new Date();
