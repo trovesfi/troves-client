@@ -1,10 +1,46 @@
-import { PoolInfo, ProtocolAtoms, StrkLendingIncentivesAtom } from './pools';
+import { PoolInfo, ProtocolAtoms2, StrkLendingIncentivesAtom } from './pools';
 import { atom } from 'jotai';
-import { AtomWithQueryResult } from 'jotai-tanstack-query';
 import { LendingSpace } from './lending.base';
 import { IDapp } from './IDapp.store';
+import { customAtomWithFetch } from '@/utils/customAtomWithFetch';
+import CONSTANTS from '@/constants';
 
-export class Nimbora extends IDapp<LendingSpace.MyBaseAprDoc[]> {
+interface NimboraBaseAprDoc {
+  name: string;
+  symbol: string;
+  protocols: string[];
+  points: [
+    {
+      protocol: string;
+      multiplier: string;
+      description: string;
+    },
+  ];
+  description: string;
+  token: string;
+  tokenManager: string;
+  underlying: string;
+  underlyingSymbol: string;
+  underlyingPrice: string;
+  l1Strategy: string;
+  decimals: string;
+  epoch: string;
+  epochDelay: string;
+  tvl: string;
+  aprBreakdown: {
+    base: string;
+    boost: string;
+    incentives: string;
+  };
+  apr: string;
+  shareRatio: string;
+  remainingDepositAvailable: string;
+  totalAssets: string;
+  limit: string;
+  performanceFee: string;
+}
+
+export class Nimbora extends IDapp<NimboraBaseAprDoc> {
   name = 'Nimbora';
   link = 'https://app.nimbora.io/';
   logo =
@@ -25,20 +61,35 @@ export class Nimbora extends IDapp<LendingSpace.MyBaseAprDoc[]> {
     );
   }
 
-  getBaseAPY(
-    p: PoolInfo,
-    data: AtomWithQueryResult<LendingSpace.MyBaseAprDoc[], Error>,
-  ) {
-    return LendingSpace.getBaseAPY(p, data);
+  // getBaseAPY(
+  //   p: PoolInfo,
+  //   data: AtomWithQueryResult<LendingSpace.MyBaseAprDoc[], Error>,
+  // ) {
+  //   return LendingSpace.getBaseAPY(p, data);
+  // }
+
+  commonVaultFilter(poolName: string) {
+    const supportedPools = ['nstUSD', 'npeETH', 'nsDAI'];
+    return supportedPools.includes(poolName);
   }
 }
 
 export const nimbora = new Nimbora();
-const NimboraAtoms: ProtocolAtoms = {
+const NimboraAtoms: ProtocolAtoms2 = {
+  baseAPRs: customAtomWithFetch({
+    queryKey: 'nimbora_lending_base_aprs',
+    url: CONSTANTS.NIMBORA.BASE_APR_API,
+  }),
   pools: atom((get) => {
     const poolsInfo = get(StrkLendingIncentivesAtom);
     const empty: PoolInfo[] = [];
-    if (poolsInfo.data) return nimbora._computePoolsInfo(poolsInfo.data);
+    if (!NimboraAtoms.baseAPRs) return empty;
+    const baseInfo = get(NimboraAtoms.baseAPRs);
+    // console.log('nimbora', baseInfo);
+    if (poolsInfo.data) {
+      const pools = nimbora._computePoolsInfo(poolsInfo.data);
+      return nimbora.addBaseAPYs(pools, baseInfo);
+    }
     return empty;
   }),
 };

@@ -7,6 +7,8 @@ import NostraDegenAtoms, { nostraDegen } from './nostradegen.store';
 import NostraLendingAtoms, { nostraLending } from './nostralending.store';
 import VesuAtoms, { vesu } from './vesu.store';
 import ZkLendAtoms, { zkLend } from './zklend.store';
+// import NimboraAtoms, { nimbora } from './nimbora.store';
+import NimboraDexAtoms, { nimboraDex } from './nimboradex.store';
 import CarmineAtoms, { carmine } from './carmine.store';
 import { atom } from 'jotai';
 import { Category, PoolInfo, PoolType } from './pools';
@@ -97,7 +99,12 @@ export const PROTOCOLS = [
   //   name: nimbora.name,
   //   class: nimbora,
   //   atoms: NimboraAtoms,
-  // }
+  // },
+  {
+    name: nimboraDex.name,
+    class: nimboraDex,
+    atoms: NimboraDexAtoms,
+  },
 ];
 
 export const ALL_FILTER = 'All';
@@ -110,7 +117,7 @@ export const filters = {
   categories: [...Object.values(Category)],
   types: [...Object.values(PoolType)],
   protocols: allProtocols.filter(
-    (p, index) => allProtocols.findIndex((_p) => _p.name == p.name) == index,
+    (p, index) => allProtocols.findIndex((_p) => _p.name === p.name) === index,
   ),
 };
 

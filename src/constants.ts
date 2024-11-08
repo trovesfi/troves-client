@@ -32,6 +32,9 @@ const CONSTANTS = {
   ZKLEND: {
     BASE_APR_API: '/zklend/api/pools',
   },
+  NIMBORA: {
+    DEX_APR_API: '/nimbora/yield-dex/strategies',
+  },
   JEDI: {
     BASE_API: '/jediswap/graphql',
   },
