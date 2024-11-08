@@ -78,7 +78,7 @@ export const nimbora = new Nimbora();
 const NimboraAtoms: ProtocolAtoms2 = {
   baseAPRs: customAtomWithFetch({
     queryKey: 'nimbora_lending_base_aprs',
-    url: CONSTANTS.NIMBORA.BASE_APR_API,
+    url: CONSTANTS.NIMBORA.DEX_APR_API,
   }),
   pools: atom((get) => {
     const poolsInfo = get(StrkLendingIncentivesAtom);
