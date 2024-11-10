@@ -103,6 +103,7 @@ export class IStrategyProps {
   actions: StrategyAction[] = [];
   netYield: number = 0;
   leverage: number = 0;
+  fee_factor = 0; // in absolute terms, not %
   status = StrategyStatus.UNINTIALISED;
 
   readonly rewardTokens: { logo: string }[];

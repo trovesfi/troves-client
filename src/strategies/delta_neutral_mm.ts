@@ -32,6 +32,7 @@ export class DeltaNeutralMM extends IStrategy {
   readonly strategyAddress: string;
   // Factor of Amount to be deposited/borrowed at each step relative to the previous step
   readonly stepAmountFactors: number[];
+  fee_factor = 0.1; // 10% fee
 
   constructor(
     token: TokenInfo,
@@ -150,10 +151,21 @@ export class DeltaNeutralMM extends IStrategy {
     const _amount = (
       Number(amount) * this.stepAmountFactors[actions.length]
     ).toFixed(2);
+    const pool = { ...eligiblePools[0] };
+    const isDeposit = actions.length == 0 || actions.length == 2;
+    const effectiveAPR = pool.aprSplits.reduce((a, b) => {
+      if (b.apr == 'Err') return a;
+      if (!isDeposit) return a + Number(b.apr);
+      if (b.title.includes('STRK rewards')) {
+        return a + Number(b.apr) * (1 - this.fee_factor);
+      }
+      return a + Number(b.apr);
+    }, 0);
+    pool.apr = isDeposit ? effectiveAPR : pool.borrow.apr;
     return [
       ...actions,
       {
-        pool: eligiblePools[0],
+        pool,
         amount: _amount,
         isDeposit: actions.length == 0 || actions.length == 2,
       },

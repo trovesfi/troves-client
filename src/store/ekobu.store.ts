@@ -312,6 +312,7 @@ export class Ekubo extends IDapp<EkuboBaseAprDoc> {
     });
 
     const [ethPrice, strkPrice, usdcPrice] = await Promise.all(pricePromises);
+
     return {
       tokens,
       defiSpringData,

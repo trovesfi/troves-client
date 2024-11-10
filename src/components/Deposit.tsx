@@ -339,15 +339,6 @@ export default function Deposit(props: DepositProps) {
         />
       </Center>
 
-      <Text
-        textAlign="center"
-        color="disabled_bg"
-        fontSize="12px"
-        marginTop="20px"
-      >
-        No additional fees by STRKFarm
-      </Text>
-
       <Box width="100%" marginTop={'15px'}>
         <Flex justifyContent="space-between">
           <Text fontSize={'12px'} color="color2" fontWeight={'bold'}>

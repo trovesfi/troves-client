@@ -96,17 +96,19 @@ const HarvestTime: React.FC<HarvestTimeProps> = ({ strategy, balData }) => {
     <Box>
       <Flex justifyContent="space-between">
         <Flex>
-          <Stat
-            marginRight={'5px'}
-            display={'flex'}
-            flexDirection={'column'}
-            justifyContent={'flex-end'}
-          >
-            <StatLabel>APY</StatLabel>
-            <StatNumber color="cyan" lineHeight="24px">
-              {((strategyInfo?.apy || 0) * 100).toFixed(2)}%
-            </StatNumber>
-          </Stat>
+          <Tooltip label="Current APY including any fees. Net returns subject to change based on market conditions.">
+            <Stat
+              marginRight={'5px'}
+              display={'flex'}
+              flexDirection={'column'}
+              justifyContent={'flex-end'}
+            >
+              <StatLabel>APY</StatLabel>
+              <StatNumber color="cyan" lineHeight="24px">
+                {((strategyInfo?.apy || 0) * 100).toFixed(2)}%
+              </StatNumber>
+            </Stat>
+          </Tooltip>
           <Flex flexDirection={'column'} justifyContent={'flex-end'}>
             <Tooltip label="This shows how much higher your yield is compared to zKLend">
               <Tag

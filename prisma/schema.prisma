@@ -8,19 +8,51 @@ generator client {
 }
 
 model User {
-  id            Int        @id @default(autoincrement())
-  address       String     @unique
-  isTncSigned   Boolean?   @default(false)
+  id            Int           @id @default(autoincrement())
+  address       String        @unique
+  isTncSigned   Boolean?      @default(false)
   message       String?
-  tncDocVersion String?    @default("1.0")
-  referralCode  String     @unique
+  tncDocVersion String?       @default("1.0")
+  referralCode  String        @unique
   referrals     Referral[]
-  referralCount Int?       @default(0)
+  referralCount Int?          @default(0)
+  Raffles       Raffle[]
+  og_nft_users  og_nft_users?
+  Signatures    Signatures[]
+  LuckyWinner   LuckyWinner[]
 
-  createdAt    DateTime      @default(now())
-  og_nft_users og_nft_users?
-  updatedAt    DateTime      @updatedAt @default(now())
-  Signatures   Signatures[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Raffle {
+  raffleId Int @id @default(autoincrement())
+
+  isRaffleParticipant Boolean? @default(false)
+  sharedOnX           Boolean? @default(false)
+  activeDeposits      Boolean? @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  User   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+
+  LuckyWinner LuckyWinner[]
+}
+
+model LuckyWinner {
+  winnerId Int @id @default(autoincrement())
+  roundId  Int @default(autoincrement())
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  Raffle   Raffle @relation(fields: [raffleId], references: [raffleId])
+  raffleId Int
+
+  User   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
 }
 
 model Signatures {
