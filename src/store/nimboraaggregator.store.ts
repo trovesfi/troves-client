@@ -7,7 +7,7 @@ import { StrategyLiveStatus } from '@/strategies/IStrategy';
 import fetchWithRetry from '@/utils/fetchWithRetry';
 import { IDapp } from './IDapp.store';
 
-interface NimboraDexDoc {
+interface NimboraAggregatorDoc {
   name: string;
   symbol: string;
   protocols: string[];
@@ -19,15 +19,11 @@ interface NimboraDexDoc {
     },
   ];
   description: string;
-  token: string;
-  tokenManager: string;
+  vault: string;
   underlying: string;
   underlyingSymbol: string;
   underlyingPrice: string;
-  l1Strategy: string;
   decimals: string;
-  epoch: string;
-  epochDelay: string;
   tvl: string;
   aprBreakdown: {
     base: string;
@@ -42,13 +38,13 @@ interface NimboraDexDoc {
   performanceFee: string;
 }
 
-export class NimboraDex extends IDapp<NimboraDexDoc> {
+export class NimboraAggregator extends IDapp<NimboraAggregatorDoc> {
   name = 'Nimbora';
   link = 'https://app.nimbora.io/';
   logo =
     'https://assets-global.website-files.com/64f0518cbb38bb59ddd7a331/64f1ea84a753c1ed93b2c920_faviconn.png';
 
-  incentiveDataKey = 'isNimboraDex';
+  incentiveDataKey = 'isNimboraAggregator';
 
   _computePoolsInfo(data: any) {
     try {
@@ -58,12 +54,11 @@ export class NimboraDex extends IDapp<NimboraDexDoc> {
       Object.keys(data)
         .filter(this.commonVaultFilter)
         .forEach((poolName) => {
-          const poolData: NimboraDexDoc = data[poolName];
+          const poolData: NimboraAggregatorDoc = data[poolName];
           let category = Category.Others;
-          let riskFactor = 3;
-          if (poolName === 'USDC') {
-            category = Category.Stable;
-            riskFactor = 0.5;
+          const riskFactor = 3;
+          if (poolName === 'STRK') {
+            category = Category.STRK;
           }
 
           const logo =
@@ -86,7 +81,7 @@ export class NimboraDex extends IDapp<NimboraDexDoc> {
               link: this.link,
               logo: this.logo,
             },
-            apr,
+            apr: apr ?? 0,
             tvl: Number(poolData.tvl),
             aprSplits: [
               {
@@ -131,21 +126,21 @@ export class NimboraDex extends IDapp<NimboraDexDoc> {
   }
 
   commonVaultFilter(poolName: string) {
-    const supportedPools = ['USDC', 'ETH', 'DAI'];
+    const supportedPools = ['STRK'];
     return supportedPools.includes(poolName);
   }
 }
 
-export const nimboraDex = new NimboraDex();
+export const nimboraAggregator = new NimboraAggregator();
 
-export const NimboraDexAtom = atomWithQuery((get) => ({
-  queryKey: ['isNimboraDex'],
+export const NimboraAggregatorAtom = atomWithQuery((get) => ({
+  queryKey: ['isNimboraAggregator'],
   queryFn: async ({ queryKey }) => {
-    const fetchPools = async (): Promise<NimboraDexDoc[]> => {
+    const fetchPools = async (): Promise<NimboraAggregatorDoc[]> => {
       const res = await fetchWithRetry(
-        CONSTANTS.NIMBORA.DEX_APR_API,
+        CONSTANTS.NIMBORA.AGGREGATOR_APR_API,
         {},
-        'Failed to fetch Nimbora Yield Dex data',
+        'Failed to fetch Nimbora Aggregator data',
       );
 
       if (!res) {
@@ -157,18 +152,23 @@ export const NimboraDexAtom = atomWithQuery((get) => ({
     };
 
     const pools = await fetchPools();
-    return pools.reduce<{ [key: string]: NimboraDexDoc }>((acc, pool) => {
-      acc[pool.underlyingSymbol] = pool;
-      return acc;
-    }, {});
+    return pools.reduce<{ [key: string]: NimboraAggregatorDoc }>(
+      (acc, pool) => {
+        acc[pool.underlyingSymbol] = pool;
+        return acc;
+      },
+      {},
+    );
   },
 }));
 
-const NimboraDexAtoms: ProtocolAtoms = {
+const NimboraAggregatorAtoms: ProtocolAtoms = {
   pools: atom((get) => {
-    const poolsInfo = get(NimboraDexAtom);
-    return poolsInfo.data ? nimboraDex._computePoolsInfo(poolsInfo.data) : [];
+    const poolsInfo = get(NimboraAggregatorAtom);
+    return poolsInfo.data
+      ? nimboraAggregator._computePoolsInfo(poolsInfo.data)
+      : [];
   }),
 };
 
-export default NimboraDexAtoms;
+export default NimboraAggregatorAtoms;

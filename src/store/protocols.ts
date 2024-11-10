@@ -7,8 +7,11 @@ import NostraDegenAtoms, { nostraDegen } from './nostradegen.store';
 import NostraLendingAtoms, { nostraLending } from './nostralending.store';
 import VesuAtoms, { vesu } from './vesu.store';
 import ZkLendAtoms, { zkLend } from './zklend.store';
-// import NimboraAtoms, { nimbora } from './nimbora.store';
 import NimboraDexAtoms, { nimboraDex } from './nimboradex.store';
+import NimboraAggregatorAtoms, {
+  nimboraAggregator,
+} from './nimboraaggregator.store';
+import NimboraLiquityAtoms, { nimboraLiquity } from './nimboraliquity.store';
 import CarmineAtoms, { carmine } from './carmine.store';
 import { atom } from 'jotai';
 import { Category, PoolInfo, PoolType } from './pools';
@@ -95,15 +98,20 @@ export const PROTOCOLS = [
     class: vesu,
     atoms: VesuAtoms,
   },
-  // {
-  //   name: nimbora.name,
-  //   class: nimbora,
-  //   atoms: NimboraAtoms,
-  // },
   {
     name: nimboraDex.name,
     class: nimboraDex,
     atoms: NimboraDexAtoms,
+  },
+  {
+    name: nimboraAggregator.name,
+    class: nimboraAggregator,
+    atoms: NimboraAggregatorAtoms,
+  },
+  {
+    name: nimboraLiquity.name,
+    class: nimboraLiquity,
+    atoms: NimboraLiquityAtoms,
   },
 ];
 
