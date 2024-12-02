@@ -8,9 +8,6 @@ import NostraLendingAtoms, { nostraLending } from './nostralending.store';
 import VesuAtoms, { vesu } from './vesu.store';
 import ZkLendAtoms, { zkLend } from './zklend.store';
 import NimboraDexAtoms, { nimboraDex } from './nimboradex.store';
-import NimboraAggregatorAtoms, {
-  nimboraAggregator,
-} from './nimboraaggregator.store';
 import NimboraLiquityAtoms, { nimboraLiquity } from './nimboraliquity.store';
 import CarmineAtoms, { carmine } from './carmine.store';
 import { atom } from 'jotai';
@@ -102,11 +99,6 @@ export const PROTOCOLS = [
     name: nimboraDex.name,
     class: nimboraDex,
     atoms: NimboraDexAtoms,
-  },
-  {
-    name: nimboraAggregator.name,
-    class: nimboraAggregator,
-    atoms: NimboraAggregatorAtoms,
   },
   {
     name: nimboraLiquity.name,
