@@ -17,6 +17,7 @@ export enum PoolType {
   DEXV3 = 'Concentrated LP DEX',
   Lending = 'Lending',
   Derivatives = 'Derivatives',
+  Staking = 'Staking',
 }
 
 export interface APRSplit {
@@ -57,6 +58,39 @@ export interface PoolInfo extends PoolMetadata {
     riskFactor: number;
     tags: StrategyLiveStatus[];
     isAudited: boolean;
+    is_promoted?: boolean;
+  };
+}
+
+export function getDefaultPoolInfo(): PoolInfo {
+  return {
+    pool: {
+      id: '',
+      name: '',
+      logos: [],
+    },
+    protocol: {
+      name: '',
+      link: '',
+      logo: '',
+    },
+    apr: 0,
+    tvl: 0,
+    aprSplits: [],
+    category: Category.Others,
+    type: PoolType.Derivatives,
+    additional: {
+      riskFactor: 0,
+      tags: [],
+      isAudited: false,
+    },
+    borrow: {
+      apr: 0,
+      borrowFactor: 0,
+    },
+    lending: {
+      collateralFactor: 0,
+    },
   };
 }
 

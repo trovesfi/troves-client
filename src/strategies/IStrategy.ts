@@ -1,5 +1,6 @@
 import { IDapp } from '@/store/IDapp.store';
 import { BalanceResult, getBalanceAtom } from '@/store/balance.atoms';
+import { LendingSpace } from '@/store/lending.base';
 import { Category, PoolInfo } from '@/store/pools';
 import { zkLend } from '@/store/zklend.store';
 import MyNumber from '@/utils/MyNumber';
@@ -62,6 +63,7 @@ export enum StrategyLiveStatus {
   NEW = 'New',
   COMING_SOON = 'Coming Soon',
   RETIRED = 'Retired',
+  HOT = 'Hot & New 🔥',
 }
 
 export interface IStrategyActionHook {
@@ -72,7 +74,13 @@ export interface IStrategyActionHook {
 
 export interface IStrategySettings {
   maxTVL: number;
-  alerts?: { type: 'warning'; text: string }[];
+  alerts?: {
+    type: 'warning' | 'info';
+    text: string;
+    tab: 'all' | 'deposit' | 'withdraw';
+  }[];
+  hideHarvestInfo?: boolean;
+  is_promoted?: boolean;
 }
 
 export interface AmountInfo {
@@ -86,6 +94,14 @@ export interface DepositActionInputs {
   address: string;
   provider: ProviderInterface;
   isMax: boolean;
+}
+
+export function isLive(status: StrategyLiveStatus) {
+  return (
+    status == StrategyLiveStatus.ACTIVE ||
+    status == StrategyLiveStatus.HOT ||
+    status == StrategyLiveStatus.NEW
+  );
 }
 
 export interface WithdrawActionInputs extends DepositActionInputs {}
@@ -143,10 +159,7 @@ export class IStrategyProps {
   };
 
   isLive() {
-    return (
-      this.liveStatus == StrategyLiveStatus.ACTIVE ||
-      this.liveStatus == StrategyLiveStatus.NEW
-    );
+    return isLive(this.liveStatus);
   }
 
   constructor(
@@ -254,14 +267,17 @@ export class IStrategy extends IStrategyProps {
     return eligiblePools;
   }
 
-  filterZkLend(tokenName: string) {
+  filterTokenByProtocol(
+    tokenName: string,
+    protocol: IDapp<LendingSpace.MyBaseAprDoc[]> = zkLend,
+  ) {
     return (
       pools: PoolInfo[],
       amount: string,
       prevActions: StrategyAction[],
     ) => {
       return pools.filter(
-        (p) => p.pool.name == tokenName && p.protocol.name == zkLend.name,
+        (p) => p.pool.name == tokenName && p.protocol.name == protocol.name,
       );
     };
   }
@@ -302,6 +318,7 @@ export class IStrategy extends IStrategyProps {
             _amount,
           },
           this.actions,
+          _pools,
         );
 
         if (_pools.length > 0) {
@@ -334,7 +351,7 @@ export class IStrategy extends IStrategyProps {
       console.log('netYield1', sign, apr, action.amount, netYield);
     });
     this.netYield = netYield / Number(amount);
-    console.log('netYield', netYield, this.netYield, Number(amount));
+    console.log('netYield2', netYield, this.netYield, Number(amount));
     this.leverage = this.netYield / this.actions[0].pool.apr;
 
     this.postSolve();

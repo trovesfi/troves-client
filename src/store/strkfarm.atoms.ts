@@ -87,7 +87,8 @@ export class STRKFarm extends IDapp<STRKFarmStrategyAPIResult> {
         additional: {
           riskFactor,
           tags: [getLiveStatusEnum(rawPool.status.number)],
-          isAudited: true,
+          isAudited: poolName.includes('XL') ? false : true,
+          is_promoted: poolName.includes('Stake'),
         },
       };
       return poolInfo;

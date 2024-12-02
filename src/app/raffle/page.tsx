@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import Image from 'next/image';
 import React from 'react';
+import { Button } from '@chakra-ui/react';
 
 import ActiveDeposits from './_components/active-deposits';
 import RaffleTimer from './_components/raffle-timer';
@@ -21,9 +22,14 @@ const Raffle: NextPage = () => {
             during Starkspace (Devcon, Bangkok)
           </p>
 
-          <button className="border-white border px-4 py-2.5 rounded-md text-white text-sm font-bold transition-all active:scale-90 mt-3">
+          <Button
+            as="a"
+            href="https://docs.strkfarm.xyz/p/community/raffle"
+            target="_blank"
+            className="border-white border px-4 py-2.5 rounded-md text-white text-sm font-bold transition-all active:scale-90 mt-3"
+          >
             Know More
-          </button>
+          </Button>
         </div>
 
         <Image
@@ -87,17 +93,18 @@ const Raffle: NextPage = () => {
         </p>
         <p className="ml-2 text-white text-sm lg:text-base">
           3. You have to register if you want to participate. This mean you or
-          anyone on your behalf will be available t to collect the merch.{' '}
+          anyone on your behalf will be available to collect the merch.{' '}
         </p>
         <p className="ml-2 text-white text-sm lg:text-base">
           4. The rewards will be in the form of exclusive merch reserved for you
         </p>
         <p className="ml-2 text-white text-sm lg:text-base">
           5. Selected winners can collect their merch on 13th Nov, from The Fig
-          lobby, Bangkok
+          Lobby, Bangkok
         </p>
         <p className="ml-2 text-white text-sm lg:text-base">
-          6. Winners will be announced on our socials everyday
+          6. Winners will be announced on our socials (i.e. X, TG, etc.)
+          everyday
         </p>
       </div>
     </div>

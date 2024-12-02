@@ -9,16 +9,9 @@ import Mixpanel from 'mixpanel';
 const mixpanel = Mixpanel.init('118f29da6a372f0ccb6f541079cad56b');
 
 export async function POST(req: Request) {
-  const { address, signature, _signature } = await req.json();
+  const { address, signature } = await req.json();
 
-  console.debug(
-    'address',
-    address,
-    'signature',
-    signature,
-    '_signature',
-    _signature,
-  );
+  console.debug('address', address, 'signature', signature);
   if (!address || !signature) {
     return NextResponse.json({
       success: false,
@@ -57,64 +50,64 @@ export async function POST(req: Request) {
   console.debug(`Verifying signature for address: ${parsedAddress}`);
   console.debug(`SIGNING_DATA`, SIGNING_DATA);
   const hash = await myAccount.hashMessage(SIGNING_DATA);
-  try {
-    // await debug();
-    isValid = await verifyMessageHash(myAccount, hash, parsedSignature);
-    console.debug('isValid', isValid);
-    mixpanel.track('TnC signed', {
-      address,
-      signature,
-      _signature,
-      step: 1,
-      hash,
-    });
-  } catch (error) {
-    console.error('verification failed [1]:', error);
-    if (_signature) {
+  console.debug('hash', hash);
+
+  const function_sigs = ['is_valid_signature', 'isValidSignature'];
+  const signatures = [
+    parsedSignature,
+    parsedSignature.slice(parsedSignature.length - 2, parsedSignature.length),
+  ];
+
+  for (const fn_sig of function_sigs) {
+    for (const sig of signatures) {
       try {
-        const parsedSignature2 = JSON.parse(_signature) as string[];
-        isValid = await verifyMessageHash(myAccount, hash, parsedSignature2);
+        console.log(`Checking: ${fn_sig}`);
+        console.log(`Signature: ${JSON.stringify(sig)}`);
+        isValid = await verifyMessageHash(myAccount, hash, sig, fn_sig);
         console.debug('isValid', isValid);
         mixpanel.track('TnC signed', {
           address,
           signature,
-          _signature,
+          step: 1,
           hash,
-          step: 2,
+          fn_sig,
         });
-      } catch (err) {
-        console.error('verification failed [2]:', err);
-
-        // temporarily accepting all signtures
-        isValid = true;
-        mixpanel.track('TnC signing failed', {
-          address,
-          signature,
-          hash,
-          isValid,
-          _signature,
-        });
+        break;
+      } catch (error) {
+        console.warn(`verification failed [${fn_sig}]:`, error);
       }
+    }
+    if (isValid) {
+      break;
     }
   }
 
-  if (!isValid) {
-    mixpanel.track('TnC signing failed', {
-      address,
-      signature,
-      _signature,
-      hash,
-      isValid,
-    });
-    isValid = true; // temporarily accepting all signtures
-  }
+  // if (!isValid) {
+  //   mixpanel.track('TnC signing failed', {
+  //     address,
+  //     signature,
+  //     hash,
+  //     isValid,
+  //   });
+  //   isValid = true; // temporarily accepting all signtures
+  // }
 
   if (!isValid) {
-    return NextResponse.json({
-      success: false,
-      message: 'Invalid signature. Ensure account is deployed.',
-      user: null,
-    });
+    try {
+      const cls = await provider.getClassAt(address, 'pending');
+      // means account is deployed
+      return NextResponse.json({
+        success: false,
+        message: 'Invalid signature. Please contact us if issue persists.',
+        user: null,
+      });
+    } catch (error) {
+      return NextResponse.json({
+        success: false,
+        message: 'Invalid signature. Ensure account is deployed.',
+        user: null,
+      });
+    }
   }
 
   const user = await db.user.findFirst({
@@ -186,18 +179,11 @@ async function verifyMessageHash(
     });
     console.debug('verifyMessageHash resp', resp);
     if (Number(resp[0]) == 0) {
-      return false;
+      throw new Error('Invalid signature');
     }
     return true;
   } catch (err: any) {
     console.error('Error verifying signature:', err);
-    if (entrypoint === 'isValidSignature') {
-      console.debug(
-        'could be Invalid message selector, trying with is_valid_signature',
-      );
-      return verifyMessageHash(account, hash, signature, 'is_valid_signature');
-    }
-
     if (
       [
         'argent/invalid-signature',

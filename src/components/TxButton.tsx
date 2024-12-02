@@ -1,4 +1,3 @@
-import CONSTANTS from '@/constants';
 import { referralCodeAtom } from '@/store/referral.store';
 import { StrategyTxProps, monitorNewTxAtom } from '@/store/transactions.atom';
 import { IStrategyProps, TokenInfo } from '@/strategies/IStrategy';
@@ -101,7 +100,6 @@ export default function TxButton(props: TxButtonProps) {
       if (!address) return props.text;
       return '';
     }
-    if (isMobile) return CONSTANTS.MOBILE_MSG;
     if (!address) return 'Wallet not connected';
     return '';
   }, [isMobile, address, props]);

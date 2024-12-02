@@ -1,4 +1,4 @@
-import CONSTANTS from '@/constants';
+import { usePagination } from '@ajna/pagination';
 import {
   Container,
   Link,
@@ -13,13 +13,16 @@ import {
 } from '@chakra-ui/react';
 import { useAtomValue } from 'jotai';
 import React, { useMemo } from 'react';
+
+import CONSTANTS from '@/constants';
 import { filteredPools } from '@/store/protocols';
-import { usePagination } from '@ajna/pagination';
-import { YieldStrategyCard } from './YieldCard';
 import {
   STRKFarmBaseAPYsAtom,
   STRKFarmStrategyAPIResult,
 } from '@/store/strkfarm.atoms';
+
+import { YieldStrategyCard } from './YieldCard';
+
 export default function Strategies() {
   const strkFarmPoolsRes = useAtomValue(STRKFarmBaseAPYsAtom);
   const strkFarmPools = useMemo(() => {

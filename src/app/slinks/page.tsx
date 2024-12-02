@@ -133,6 +133,19 @@ export default function Slinks() {
   const strategies = useAtomValue(strategiesAtom);
   return (
     <Container>
+      {/* <Center 
+        maxWidth={'476px'} width={'100%'}
+        maxHeight={'100px'} height={'calc( 100vw / 4.76 )'}
+      >
+        <embed 
+          max-width='476px'
+          max-height='100px'
+          height='calc( 100vw / 4.76 )'
+          width='100%'
+          src='http://localhost:3000/embed/medium?ref=strkfarm&network=sepolia'
+          />
+      </Center>     */}
+
       <Text color={'white'}>Choose a strategy and invest</Text>
       {strategies
         .filter((s) => s.isLive())

@@ -1,6 +1,9 @@
 import CONSTANTS, { TokenName, TOKENS } from '@/constants';
+import { StrategyLiveStatus } from '@/strategies/IStrategy';
+import { getPrice } from '@/utils';
+import fetchWithRetry from '@/utils/fetchWithRetry';
 import { atom } from 'jotai';
-import { AtomWithQueryResult, atomWithQuery } from 'jotai-tanstack-query';
+import { atomWithQuery, AtomWithQueryResult } from 'jotai-tanstack-query';
 import { IDapp } from './IDapp.store';
 import {
   APRSplit,
@@ -11,9 +14,6 @@ import {
   ProtocolAtoms,
   StrkDexIncentivesAtom,
 } from './pools';
-import { StrategyLiveStatus } from '@/strategies/IStrategy';
-import fetchWithRetry from '@/utils/fetchWithRetry';
-import { getPrice } from '@/utils';
 
 interface EkuboBaseAprDoc {
   tokens: Token[];
@@ -80,7 +80,7 @@ type PriceOfToken = {
 export class Ekubo extends IDapp<EkuboBaseAprDoc> {
   name = 'Ekubo';
   link = 'https://app.ekubo.org/positions';
-  logo = 'https://app.ekubo.org/logo.svg';
+  logo = 'https://app.ekubo.org/favicon.ico';
 
   incentiveDataKey = 'Ekubo';
 

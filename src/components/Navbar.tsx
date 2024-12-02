@@ -22,15 +22,19 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useAtom, useSetAtom } from 'jotai';
-import { useStarknetkitConnectModal } from 'starknetkit';
+import {
+  connect,
+  ConnectOptionsWithConnectors,
+  StarknetkitConnector,
+} from 'starknetkit';
 
-import { CONNECTOR_NAMES } from '@/app/template';
 import tg from '@/assets/tg.svg';
 import CONSTANTS from '@/constants';
 import { getERC20Balance } from '@/store/balance.atoms';
 import { addressAtom } from '@/store/claims.atoms';
 import { lastWalletAtom } from '@/store/utils.atoms';
 import {
+  getEndpoint,
   getTokenInfoFromName,
   MyMenuItemProps,
   MyMenuListProps,
@@ -47,7 +51,7 @@ import {
   useStarkProfile,
 } from '@starknet-react/core';
 import mixpanel from 'mixpanel-browser';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
 import {
   ArgentMobileConnector,
@@ -55,30 +59,48 @@ import {
 } from 'starknetkit/argentMobile';
 import { WebWalletConnector } from 'starknetkit/webwallet';
 import TncModal from './TncModal';
+import { constants } from 'starknet';
 
-export const MYCONNECTORS: any[] = isInArgentMobileAppBrowser()
-  ? [
-      ArgentMobileConnector.init({
-        options: {
-          dappName: 'STRKFarm',
-          projectId: 'strkfarm',
-          url: 'https://app.strkfarm.xyz',
-        },
-        inAppBrowserOptions: {},
-      }),
-    ]
-  : [
-      new InjectedConnector({ options: { id: 'braavos', name: 'Braavos' } }),
-      new InjectedConnector({ options: { id: 'argentX', name: 'Argent X' } }),
-      new WebWalletConnector({ url: 'https://web.argent.xyz' }),
-      ArgentMobileConnector.init({
-        options: {
-          dappName: 'STRKFarm',
-          projectId: 'strkfarm',
-          url: 'https://app.strkfarm.xyz',
-        },
-      }),
-    ];
+export function getConnectors(isMobile: boolean) {
+  const mobileConnector = ArgentMobileConnector.init({
+    options: {
+      dappName: 'STRKFarm',
+      url: getEndpoint(),
+      chainId: constants.NetworkName.SN_MAIN,
+    },
+    inAppBrowserOptions: {},
+  }) as StarknetkitConnector;
+
+  const argentXConnector = new InjectedConnector({
+    options: {
+      id: 'argentX',
+      name: 'Argent X',
+    },
+  });
+
+  const braavosConnector = new InjectedConnector({
+    options: {
+      id: 'braavos',
+      name: 'Braavos',
+    },
+  });
+
+  const webWalletConnector = new WebWalletConnector({
+    url: 'https://web.argent.xyz',
+  }) as StarknetkitConnector;
+
+  if (isInArgentMobileAppBrowser()) {
+    return [mobileConnector];
+  } else if (isMobile) {
+    return [braavosConnector, mobileConnector, webWalletConnector];
+  }
+  return [
+    argentXConnector,
+    braavosConnector,
+    mobileConnector,
+    webWalletConnector,
+  ];
+}
 
 interface NavbarProps {
   hideTg?: boolean;
@@ -87,29 +109,15 @@ interface NavbarProps {
 
 export default function Navbar(props: NavbarProps) {
   const { address, connector, account } = useAccount();
-  const { connect, connectors } = useConnect();
   const { disconnectAsync } = useDisconnect();
   const setAddress = useSetAtom(addressAtom);
   const { data: starkProfile } = useStarkProfile({
     address,
     useDefaultPfp: true,
   });
+  const { connect: connectSnReact } = useConnect();
 
   const [lastWallet, setLastWallet] = useAtom(lastWalletAtom);
-  const { starknetkitConnectModal: starknetkitConnectModal1 } =
-    useStarknetkitConnectModal({
-      modalMode: 'canAsk',
-      modalTheme: 'dark',
-      connectors: MYCONNECTORS,
-    });
-
-  // backup
-  const { starknetkitConnectModal: starknetkitConnectModal2 } =
-    useStarknetkitConnectModal({
-      modalMode: 'alwaysAsk',
-      modalTheme: 'dark',
-      connectors: MYCONNECTORS,
-    });
 
   const getTokenBalance = async (token: string, address: string) => {
     const tokenInfo = getTokenInfoFromName(token);
@@ -119,6 +127,41 @@ export default function Navbar(props: NavbarProps) {
   };
 
   console.log(account, 'account');
+
+  const connectorConfig: ConnectOptionsWithConnectors = useMemo(() => {
+    return {
+      modalMode: 'canAsk',
+      modalTheme: 'dark',
+      webWalletUrl: 'https://web.argent.xyz',
+      argentMobileOptions: {
+        dappName: 'STRKFarm',
+        chainId: constants.NetworkName.SN_MAIN,
+        url: getEndpoint(),
+      },
+      dappName: 'STRKFarm',
+      connectors: getConnectors(isMobile) as StarknetkitConnector[],
+    };
+  }, [isMobile]);
+
+  async function connectWallet(config = connectorConfig) {
+    try {
+      const { connector } = await connect(config);
+
+      if (connector) {
+        connectSnReact({ connector: connector as any });
+      }
+    } catch (error) {
+      console.error('connectWallet error', error);
+    }
+  }
+
+  useEffect(() => {
+    const config = connectorConfig;
+    connectWallet({
+      ...config,
+      modalMode: 'neverAsk',
+    });
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -136,55 +179,6 @@ export default function Navbar(props: NavbarProps) {
       }
     })();
   }, [address]);
-
-  // Connect wallet using starknetkit
-  const connectWallet = async () => {
-    try {
-      const result = await starknetkitConnectModal1();
-      if (!result.connector) {
-        throw new Error('No connector found');
-      }
-
-      connect({ connector: result.connector });
-    } catch (error) {
-      console.warn('connectWallet error', error);
-      try {
-        const result = await starknetkitConnectModal2();
-        if (!result.connector) {
-          throw new Error('No connector found');
-        }
-        connect({ connector: result.connector });
-      } catch (error) {
-        console.error('connectWallet error', error);
-        alert('Error connecting wallet');
-      }
-    }
-  };
-
-  function autoConnect(retry = 0) {
-    console.log('lastWallet', lastWallet, connectors);
-    try {
-      if (!address && lastWallet) {
-        const connectorIndex = CONNECTOR_NAMES.findIndex(
-          (name) => name === lastWallet,
-        );
-        if (connectorIndex >= 0) {
-          connect({ connector: MYCONNECTORS[connectorIndex] });
-        }
-      }
-    } catch (error) {
-      console.error('lastWallet error', error);
-      if (retry < 10) {
-        setTimeout(() => {
-          autoConnect(retry + 1);
-        }, 1000);
-      }
-    }
-  }
-  // Auto-connects to last wallet
-  useEffect(() => {
-    autoConnect();
-  }, [lastWallet]);
 
   // Set last wallet when a new wallet is connected
   useEffect(() => {
@@ -213,7 +207,7 @@ export default function Navbar(props: NavbarProps) {
       top="0"
     >
       <TncModal />
-      <Center bg="bg" color="gray" padding={0}>
+      {/* <Center bg="bg" color="gray" padding={0}>
         <Text
           fontSize="12px"
           textAlign={'center'}
@@ -233,7 +227,7 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </b>
         </Text>
-      </Center>
+      </Center> */}
       <Box
         width={'100%'}
         maxWidth="1400px"
@@ -291,7 +285,7 @@ export default function Navbar(props: NavbarProps) {
               Home
             </Button>
           </Link>
-          <Link href="/raffle" margin="0 10px 0 0">
+          {/* <Link href="/raffle" margin="0 10px 0 0">
             <Button
               bg="transparent"
               color="color2"
@@ -308,7 +302,7 @@ export default function Navbar(props: NavbarProps) {
             >
               🕹 {'  '}Raffle
             </Button>
-          </Link>
+          </Link> */}
           <Link href="/community" margin="0 10px 0 0">
             <Button
               bg="transparent"
@@ -400,7 +394,13 @@ export default function Navbar(props: NavbarProps) {
                 my={{ base: 'auto', sm: 'initial' }}
                 paddingX={{ base: '0.5rem', sm: '1rem' }}
                 fontSize={{ base: '0.8rem', sm: '1rem' }}
-                onClick={address ? undefined : connectWallet}
+                onClick={
+                  address
+                    ? undefined
+                    : () => {
+                        connectWallet();
+                      }
+                }
                 size="xs"
               >
                 <Center>
@@ -467,9 +467,9 @@ export default function Navbar(props: NavbarProps) {
                   <Link href="/" color="color1_light" onClick={onClose}>
                     Home
                   </Link>
-                  <Link href="/raffle" color="color1_light" onClick={onClose}>
+                  {/* <Link href="/raffle" color="color1_light" onClick={onClose}>
                     🕹 {'  '}Raffle
-                  </Link>
+                  </Link> */}
                   <Link
                     href="/community"
                     color="color1_light"
