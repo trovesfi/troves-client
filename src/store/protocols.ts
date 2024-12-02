@@ -11,16 +11,12 @@ import NostraLendingAtoms, { nostraLending } from './nostralending.store';
 import VesuAtoms, { vesu } from './vesu.store';
 import ZkLendAtoms, { zkLend } from './zklend.store';
 import NimboraDexAtoms, { nimboraDex } from './nimboradex.store';
-import CarmineAtoms, { carmine } from './carmine.store';
-import { atom } from 'jotai';
 import { Category, PoolInfo, PoolType } from './pools';
 import { getLiveStatusEnum } from './strategies.atoms';
 import STRKFarmAtoms, {
   strkfarm,
   STRKFarmStrategyAPIResult,
 } from './strkfarm.atoms';
-import VesuAtoms, { vesu } from './vesu.store';
-import ZkLendAtoms, { zkLend } from './zklend.store';
 import EndurAtoms, { endur } from './endur.store';
 
 export const PROTOCOLS = [

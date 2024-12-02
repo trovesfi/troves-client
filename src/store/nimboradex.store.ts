@@ -44,7 +44,7 @@ interface NimboraDexDoc {
 
 export class NimboraDex extends IDapp<NimboraDexDoc> {
   name = 'Nimbora';
-  link = 'https://app.nimbora.io/';
+  link = 'https://app.nimbora.io/referral/?ref=u4j7y0c8';
   logo =
     'https://assets-global.website-files.com/64f0518cbb38bb59ddd7a331/64f1ea84a753c1ed93b2c920_faviconn.png';
 
@@ -60,7 +60,7 @@ export class NimboraDex extends IDapp<NimboraDexDoc> {
         .forEach((poolName) => {
           const poolData: NimboraDexDoc = data[poolName];
           let category = Category.Others;
-          let riskFactor = 3;
+          let riskFactor = 0.75;
           if (poolName === 'USDC') {
             category = Category.Stable;
             riskFactor = 0.5;
@@ -78,7 +78,7 @@ export class NimboraDex extends IDapp<NimboraDexDoc> {
           const poolInfo: PoolInfo = {
             pool: {
               id: this.getPoolId(this.name, poolName),
-              name: `Earn ${poolName} with ${poolData.symbol}`,
+              name: `${poolName} with ${poolData.symbol}`,
               logos: [logo],
             },
             protocol: {
