@@ -24,6 +24,8 @@ import {
   getERC20Balance,
 } from '@/store/balance.atoms';
 import { atom } from 'jotai';
+import { IDapp } from '@/store/IDapp.store';
+import { LendingSpace } from '@/store/lending.base';
 
 export class DeltaNeutralMM extends IStrategy {
   riskFactor = 0.75;
@@ -34,6 +36,8 @@ export class DeltaNeutralMM extends IStrategy {
   readonly stepAmountFactors: number[];
   fee_factor = 0.1; // 10% fee
 
+  protocol1: IDapp<LendingSpace.MyBaseAprDoc[]>;
+  protocol2: IDapp<LendingSpace.MyBaseAprDoc[]>;
   constructor(
     token: TokenInfo,
     name: string,
@@ -43,6 +47,8 @@ export class DeltaNeutralMM extends IStrategy {
     stepAmountFactors: number[],
     liveStatus: StrategyLiveStatus,
     settings: IStrategySettings,
+    protocol1: IDapp<LendingSpace.MyBaseAprDoc[]> = zkLend,
+    protocol2: IDapp<LendingSpace.MyBaseAprDoc[]> = nostraLending,
   ) {
     const rewardTokens = [{ logo: CONSTANTS.LOGOS.STRK }];
     const nftInfo = NFTS.find(
@@ -54,7 +60,7 @@ export class DeltaNeutralMM extends IStrategy {
     }
     const holdingTokens: (TokenInfo | NFTInfo)[] = [nftInfo];
     super(
-      `${token.name.toLowerCase()}_sensei`,
+      name.toLowerCase().replaceAll(' ', '_'),
       'DeltaNeutralMM',
       name,
       description,
@@ -64,25 +70,27 @@ export class DeltaNeutralMM extends IStrategy {
       settings,
     );
     this.token = token;
+    this.protocol1 = protocol1;
+    this.protocol2 = protocol2;
 
     this.steps = [
       {
-        name: `Supply's your ${token.name} to zkLend`,
+        name: `Supply's your ${token.name} to ${protocol1.name}`,
         optimizer: this.optimizer,
         filter: [this.filterMainToken],
       },
       {
-        name: `Borrow ${secondaryTokenName} from zkLend`,
+        name: `Borrow ${secondaryTokenName} from ${protocol1.name}`,
         optimizer: this.optimizer,
         filter: [this.filterSecondaryToken],
       },
       {
-        name: `Deposit ${secondaryTokenName} to Nostra`,
+        name: `Deposit ${secondaryTokenName} to ${protocol2.name}`,
         optimizer: this.optimizer,
         filter: [this.filterSecondaryToken],
       },
       {
-        name: `Borrow ${token.name} from Nostra`,
+        name: `Borrow ${token.name} from ${protocol2.name}`,
         optimizer: this.optimizer,
         filter: [this.filterMainToken],
       },
@@ -94,7 +102,7 @@ export class DeltaNeutralMM extends IStrategy {
       {
         name: `Re-invest your STRK Rewards every 7 days (Compound)`,
         optimizer: this.compounder,
-        filter: [this.filterZkLend('STRK')],
+        filter: [this.filterTokenByProtocol('STRK', this.protocol1)],
       },
     ];
 
@@ -124,8 +132,8 @@ export class DeltaNeutralMM extends IStrategy {
   ) {
     const dapp =
       prevActions.length == 0 || prevActions.length == 4
-        ? zkLend
-        : nostraLending;
+        ? this.protocol1
+        : this.protocol2;
     return pools.filter(
       (p) => p.pool.name == this.token.name && p.protocol.name == dapp.name,
     );
@@ -136,7 +144,7 @@ export class DeltaNeutralMM extends IStrategy {
     amount: string,
     prevActions: StrategyAction[],
   ) {
-    const dapp = prevActions.length == 1 ? zkLend : nostraLending;
+    const dapp = prevActions.length == 1 ? this.protocol1 : this.protocol2;
     return pools.filter(
       (p) => p.pool.name == this.secondaryToken && p.protocol.name == dapp.name,
     );

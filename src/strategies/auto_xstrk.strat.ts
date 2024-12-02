@@ -1,4 +1,4 @@
-import CONSTANTS, { TOKENS, TokenName } from '@/constants';
+import CONSTANTS, { TOKENS, provider } from '@/constants';
 import { PoolInfo } from '@/store/pools';
 import {
   DepositActionInputs,
@@ -13,17 +13,16 @@ import ERC20Abi from '@/abi/erc20.abi.json';
 import AutoStrkAbi from '@/abi/autoStrk.abi.json';
 import MasterAbi from '@/abi/master.abi.json';
 import MyNumber from '@/utils/MyNumber';
-import { Contract, uint256 } from 'starknet';
+import { Contract, num, uint256 } from 'starknet';
 import { atom } from 'jotai';
 import {
   DUMMY_BAL_ATOM,
   getBalance,
   getBalanceAtom,
-  getERC20Balance,
   getERC20BalanceAtom,
 } from '@/store/balance.atoms';
 import { getPrice, getTokenInfoFromName } from '@/utils';
-import { zkLend } from '@/store/zklend.store';
+import { endur } from '@/store/endur.store';
 
 interface Step {
   name: string;
@@ -39,17 +38,15 @@ interface Step {
   ) => PoolInfo[])[];
 }
 
-export class AutoTokenStrategy extends IStrategy {
+export class AutoXSTRKStrategy extends IStrategy {
   riskFactor = 0.5;
   token: TokenInfo;
   readonly lpTokenName: string;
   readonly strategyAddress: string;
 
   constructor(
-    token: TokenName,
     name: string,
     description: string,
-    lpTokenName: string,
     strategyAddress: string,
     settings: IStrategySettings,
   ) {
@@ -58,39 +55,76 @@ export class AutoTokenStrategy extends IStrategy {
     if (!frmToken) throw new Error('frmToken undefined');
     const holdingTokens = [frmToken];
 
+    const token = 'STRK';
     super(
-      `auto_token_${token.toLowerCase()}`,
-      'AutoSTRK',
+      `stake_${token.toLowerCase()}`,
+      'Stake STRK',
       name,
       description,
       rewardTokens,
       holdingTokens,
-      StrategyLiveStatus.ACTIVE,
+      StrategyLiveStatus.HOT,
       settings,
     );
     this.token = getTokenInfoFromName(token);
+    // ! Change this to xSTRK later
+    this.lpTokenName = 'xSTRK';
 
     this.steps = [
       {
-        name: `Supplies your ${token} to zkLend`,
+        name: `Stake your ${token} to Endur`,
         optimizer: this.optimizer,
-        filter: [this.filterTokenByProtocol(this.token.name, zkLend)],
+        filter: [this.filterSTRKEndur()],
       },
       {
-        name: `Re-invest your STRK Rewards every 7 days`,
-        optimizer: this.compounder,
-        filter: [this.filterTokenByProtocol('STRK', zkLend)],
+        name: `Collect launch incentives`,
+        optimizer: this.optimizer,
+        filter: [
+          (pools, _, _actions) => {
+            const eligiblePools = pools.filter(
+              (p) => p.pool.id == 'endur_strk_reward',
+            );
+            if (!eligiblePools)
+              throw new Error(`${this.tag}: [F1] no eligible pools`);
+            return eligiblePools;
+          },
+        ],
       },
     ];
     const _risks = [...this.risks];
     this.risks = [
       this.getSafetyFactorLine(),
       `Your original investment is safe. If you deposit 100 tokens, you will always get at least 100 tokens back, unless due to below reasons.`,
-      `Transfering excess ${lpTokenName} may take your borrows in zkLend near liquidaton. It's safer to deposit ${token} directly.`,
       ..._risks.slice(1),
     ];
-    this.lpTokenName = lpTokenName;
     this.strategyAddress = strategyAddress;
+
+    this.settings.alerts = [
+      {
+        type: 'info',
+        text: 'Pro tip: You can deposit STRK or xSTRK by selecting the token from above dropdown. STRK deposited staked to convert to xSTRK',
+        tab: 'deposit',
+      },
+      {
+        type: 'warning',
+        text: 'On withdrawal, you will receive xSTRK. You can redeem xSTRK for STRK on endur.fi',
+        tab: 'withdraw',
+      },
+    ];
+    this.settings.hideHarvestInfo = true;
+  }
+
+  filterSTRKEndur() {
+    return (
+      pools: PoolInfo[],
+      amount: string,
+      prevActions: StrategyAction[],
+    ) => {
+      console.log('filterSTRKEndur', pools);
+      return pools.filter(
+        (p) => p.pool.name == 'STRK' && p.protocol.name == endur.name,
+      );
+    };
   }
 
   optimizer(
@@ -98,24 +132,8 @@ export class AutoTokenStrategy extends IStrategy {
     amount: string,
     actions: StrategyAction[],
   ): StrategyAction[] {
-    return [{ pool: eligiblePools[0], amount, isDeposit: true }];
-  }
-
-  compounder(
-    eligiblePools: PoolInfo[],
-    amount: string,
-    actions: StrategyAction[],
-  ): StrategyAction[] {
-    const baseApr = actions[0].pool.apr;
-    const compoundingApr = (1 + baseApr / 52) ** 52 - 1;
-    return [
-      ...actions,
-      {
-        pool: { ...eligiblePools[0], apr: compoundingApr - baseApr },
-        amount,
-        isDeposit: true,
-      },
-    ];
+    console.log('optimizer', eligiblePools);
+    return [...actions, { pool: eligiblePools[0], amount, isDeposit: true }];
   }
 
   getUserTVL = async (user: string) => {
@@ -152,28 +170,65 @@ export class AutoTokenStrategy extends IStrategy {
         tokenInfo: this.token,
       };
 
-    const zTokenInfo = getTokenInfoFromName(this.lpTokenName);
-    const bal = await getERC20Balance(zTokenInfo, this.strategyAddress);
-    const price = await getPrice(this.token);
-    return {
-      amount: bal.amount,
-      usdValue: Number(bal.amount.toEtherStr()) * price,
-      tokenInfo: this.token,
-    };
+    const strategyContract = new Contract(
+      AutoStrkAbi,
+      this.strategyAddress,
+      provider,
+    );
+    const asset = num.getHexString(
+      (await strategyContract.call('asset', [])).toString(),
+    );
+    console.log(`getTVL asset`, asset);
+    const STRKINfo = getTokenInfoFromName('STRK');
+    const isSTRK = asset == STRKINfo.token;
+    const xSTRKInfo = getTokenInfoFromName('xSTRK');
+    const isxSTRK = asset == xSTRKInfo.token;
+    console.log(`getTVL isSTRK`, isSTRK, isxSTRK);
+    if (isSTRK) {
+      const totalAssets = new MyNumber(
+        (await strategyContract.call('total_assets', [])).toString(),
+        STRKINfo.decimals,
+      );
+      const price = await getPrice(this.token);
+      return {
+        amount: totalAssets,
+        usdValue: Number(totalAssets.toEtherStr()) * price,
+        tokenInfo: STRKINfo,
+      };
+    } else if (isxSTRK) {
+      const xSTRKTotalAssets = new MyNumber(
+        (await strategyContract.call('total_assets', [])).toString(),
+        xSTRKInfo.decimals,
+      );
+      const xSTRKContract = new Contract(
+        AutoStrkAbi,
+        xSTRKInfo.token,
+        provider,
+      );
+      const strkAmount = new MyNumber(
+        (
+          await xSTRKContract.call('convert_to_assets', [
+            uint256.bnToUint256(xSTRKTotalAssets.toString()),
+          ])
+        ).toString(),
+        STRKINfo.decimals,
+      );
+      const price = await getPrice(this.token);
+      return {
+        amount: strkAmount,
+        usdValue: Number(strkAmount.toEtherStr()) * price,
+        tokenInfo: STRKINfo,
+      };
+    }
+    throw new Error(`getTVL asset not STRK or xSTRK`);
   };
-
-  // postSolve() {
-  //     const normalYield = this.netYield;
-  //     this.netYield = (1 + this.netYield/26)**26 - 1; // biweekly compounding
-  //     this.leverage = this.netYield / normalYield;
-  // }
 
   depositMethods = (inputs: DepositActionInputs) => {
     const { amount, address, provider } = inputs;
     const baseTokenInfo: TokenInfo = TOKENS.find(
       (t) => t.name == this.token.name,
     ) as TokenInfo; //
-    const zTokenInfo: TokenInfo = TOKENS.find(
+    const xTokenInfo: TokenInfo = TOKENS.find(
       (t) => t.name == this.lpTokenName,
     ) as TokenInfo;
 
@@ -185,7 +240,7 @@ export class AutoTokenStrategy extends IStrategy {
           balanceAtom: DUMMY_BAL_ATOM,
         },
         {
-          tokenInfo: zTokenInfo,
+          tokenInfo: xTokenInfo,
           calls: [],
           balanceAtom: DUMMY_BAL_ATOM,
         },
@@ -197,7 +252,7 @@ export class AutoTokenStrategy extends IStrategy {
       baseTokenInfo.token,
       provider,
     );
-    const zTokenContract = new Contract(ERC20Abi, zTokenInfo.token, provider);
+    const xTokenContract = new Contract(ERC20Abi, xTokenInfo.token, provider);
     const masterContract = new Contract(
       MasterAbi,
       CONSTANTS.CONTRACTS.Master,
@@ -214,14 +269,15 @@ export class AutoTokenStrategy extends IStrategy {
       masterContract.address,
       uint256.bnToUint256(amount.toString()),
     ]);
-    const call12 = masterContract.populate('invest_auto_strk', [
+    const call12 = masterContract.populate('invest_to_xstrk_auto', [
       this.strategyAddress,
       uint256.bnToUint256(amount.toString()),
       address,
     ]);
 
     // zToken
-    const call21 = zTokenContract.populate('approve', [
+    // ! switch to xSTRK later
+    const call21 = xTokenContract.populate('approve', [
       this.strategyAddress,
       uint256.bnToUint256(amount.toString()),
     ]);
@@ -240,9 +296,9 @@ export class AutoTokenStrategy extends IStrategy {
         balanceAtom: getBalanceAtom(baseTokenInfo, atom(true)),
       },
       {
-        tokenInfo: zTokenInfo,
+        tokenInfo: xTokenInfo,
         calls: calls2,
-        balanceAtom: getBalanceAtom(zTokenInfo, atom(true)),
+        balanceAtom: getBalanceAtom(xTokenInfo, atom(true)),
       },
     ];
   };
@@ -277,17 +333,17 @@ export class AutoTokenStrategy extends IStrategy {
     // const call12 = masterContract.populate("invest_auto_strk", [this.strategyAddress, uint256.bnToUint256(amount.toString()), address])
 
     // zToken
-    const call1 = frmTokenContract.populate('approve', [
-      this.strategyAddress,
-      uint256.bnToUint256(amount.toString()),
-    ]);
+    // const call1 = frmTokenContract.populate('approve', [
+    //   this.strategyAddress,
+    //   uint256.bnToUint256(amount.toString()),
+    // ]);
     const call2 = strategyContract.populate('redeem', [
       uint256.bnToUint256(amount.toString()),
       address,
       address,
     ]);
 
-    const calls = [call1, call2];
+    const calls = [call2];
 
     return [
       {

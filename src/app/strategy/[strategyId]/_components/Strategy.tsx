@@ -46,8 +46,6 @@ import {
 import { StrategyParams } from '../page';
 import MyNumber from '@/utils/MyNumber';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { isMobile } from 'react-device-detect';
-import CONSTANTS from '@/constants';
 
 const Strategy = ({ params }: StrategyParams) => {
   const { address } = useAccount();
@@ -247,9 +245,7 @@ const Strategy = ({ params }: StrategyParams) => {
                                 ) == 0
                                 ? '-'
                                 : `${balData.data.amount.toEtherToFixedDecimals(balData.data.tokenInfo?.displayDecimals || 2)} ${balData.data.tokenInfo?.name}`
-                              : isMobile
-                                ? CONSTANTS.MOBILE_MSG
-                                : 'Connect wallet'}
+                              : 'Connect wallet'}
                           </Text>
                         </Box>
                         <Tooltip label="Life time earnings">
@@ -276,8 +272,6 @@ const Strategy = ({ params }: StrategyParams) => {
                       <b>Your Holdings: </b>
                       {address ? (
                         <Spinner size="sm" marginTop={'5px'} />
-                      ) : isMobile ? (
-                        CONSTANTS.MOBILE_MSG
                       ) : (
                         'Connect wallet'
                       )}
@@ -336,20 +330,22 @@ const Strategy = ({ params }: StrategyParams) => {
                       />
                       {strategy.settings.alerts != undefined && (
                         <VStack mt={'20px'}>
-                          {strategy.settings.alerts.map((alert, index) => (
-                            <Alert
-                              status="warning"
-                              fontSize={'12px'}
-                              color={'orange'}
-                              borderRadius={'10px'}
-                              bg="color2_50p"
-                              padding={'10px'}
-                              key={index}
-                            >
-                              <AlertIcon />
-                              {alert.text}
-                            </Alert>
-                          ))}
+                          {strategy.settings.alerts
+                            .filter((a) => a.tab == 'deposit')
+                            .map((alert, index) => (
+                              <Alert
+                                status={alert.type}
+                                fontSize={'12px'}
+                                color={'light_grey'}
+                                borderRadius={'10px'}
+                                bg="color2_50p"
+                                padding={'10px'}
+                                key={index}
+                              >
+                                <AlertIcon />
+                                {alert.text}
+                              </Alert>
+                            ))}
                         </VStack>
                       )}
                     </TabPanel>
@@ -364,6 +360,26 @@ const Strategy = ({ params }: StrategyParams) => {
                         buttonText="Redeem"
                         callsInfo={strategy.withdrawMethods}
                       />
+                      {strategy.settings.alerts != undefined && (
+                        <VStack mt={'20px'}>
+                          {strategy.settings.alerts
+                            .filter((a) => a.tab == 'withdraw')
+                            .map((alert, index) => (
+                              <Alert
+                                status={alert.type}
+                                fontSize={'12px'}
+                                color={'light_grey'}
+                                borderRadius={'10px'}
+                                bg="color2_50p"
+                                padding={'10px'}
+                                key={index}
+                              >
+                                <AlertIcon />
+                                {alert.text}
+                              </Alert>
+                            ))}
+                        </VStack>
+                      )}
                     </TabPanel>
                   </TabPanels>
                 </Tabs>

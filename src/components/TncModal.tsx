@@ -13,7 +13,11 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useAccount, useDisconnect } from '@starknet-react/core';
+import {
+  useAccount,
+  useDisconnect,
+  useSignTypedData,
+} from '@starknet-react/core';
 import axios from 'axios';
 import { atomWithQuery } from 'jotai-tanstack-query';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -54,6 +58,14 @@ const TncModal: React.FC<TncModalProps> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSigningPending, setIsSigningPending] = useState(false);
   const { disconnectAsync } = useDisconnect();
+
+  const {
+    signTypedData,
+    error: signingError,
+    data: sigData,
+  } = useSignTypedData({
+    params: SIGNING_DATA,
+  });
 
   // set ref code of the user if it exists
   useEffect(() => {
@@ -97,39 +109,54 @@ const TncModal: React.FC<TncModalProps> = (props) => {
     })();
   }, [userTncInfo]);
 
+  useEffect(() => {
+    console.log('signature', sigData);
+    if (signingError) {
+      toast.error(signingError.message, {
+        position: 'bottom-right',
+      });
+      setIsSigningPending(false);
+    }
+    if (!address || !account || !sigData) {
+      return;
+    }
+
+    async function processSign() {
+      try {
+        if (!sigData) {
+          return;
+        }
+
+        const signature = sigData;
+        if (signature && signature.length > 0) {
+          const res2 = await axios.post('/api/tnc/signUser', {
+            address,
+            signature: JSON.stringify(signature),
+          });
+
+          if (res2.data?.success) {
+            onClose();
+          } else {
+            toast.error(res2.data?.message || 'Error verifying T&C');
+          }
+        }
+      } catch (error) {
+        console.error('signature', error);
+        mixpanel.track('TnC signing failed', { address });
+      }
+      setIsSigningPending(false);
+    }
+    processSign();
+  }, [sigData, signingError]);
+
   const handleSign = async () => {
     if (!address || !account) {
       return;
     }
-
     mixpanel.track('TnC agreed', { address });
+
     setIsSigningPending(true);
-
-    try {
-      const _signature = (await account.signMessage(SIGNING_DATA)) as string[];
-
-      console.log('signature', _signature);
-      const sig_len = _signature.length;
-      const signature =
-        sig_len > 2 ? _signature.slice(sig_len - 2, sig_len) : _signature;
-      if (signature && signature.length > 0) {
-        const res2 = await axios.post('/api/tnc/signUser', {
-          address,
-          signature: JSON.stringify(signature),
-          _signature: JSON.stringify(_signature),
-        });
-
-        if (res2.data?.success) {
-          onClose();
-        } else {
-          toast.error(res2.data?.message || 'Error verifying T&C');
-        }
-      }
-    } catch (error) {
-      console.error('signature', error);
-      mixpanel.track('TnC signing failed', { address });
-    }
-    setIsSigningPending(false);
+    signTypedData();
   };
 
   return (

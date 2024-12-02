@@ -126,7 +126,7 @@ const HarvestTime: React.FC<HarvestTimeProps> = ({ strategy, balData }) => {
           </Flex>
         </Flex>
 
-        {!isMobile && (
+        {!isMobile && !strategy.settings.hideHarvestInfo && (
           <Tooltip
             label={`This is when your investment increases as STRK rewards are automatically claimed and reinvested into the strategy's tokens.`}
           >
@@ -213,37 +213,39 @@ const HarvestTime: React.FC<HarvestTimeProps> = ({ strategy, balData }) => {
         )}
       </Flex>
 
-      <Box
-        display="flex"
-        padding="5px"
-        width={'100%'}
-        bg="bg"
-        marginTop={'10px'}
-        borderRadius={'5px'}
-      >
-        <Text
-          color="white"
-          fontSize="12px"
-          fontWeight="normal"
-          textAlign={isMobile ? 'left' : 'right'}
+      {!strategy.settings.hideHarvestInfo && (
+        <Box
+          display="flex"
+          padding="5px"
           width={'100%'}
+          bg="bg"
+          marginTop={'10px'}
+          borderRadius={'5px'}
         >
-          Harvested{' '}
-          <b>
-            {getDisplayCurrencyAmount(
-              harvestTime?.data?.totalStrkHarvestedByContract.STRKAmount || 0,
-              2,
-            )}{' '}
-            STRK
-          </b>{' '}
-          over <b>{harvestTime?.data?.totalHarvestsByContract} claims.</b>{' '}
-          {lastHarvest && (
-            <span>
-              Last harvested <b>{timeAgo(lastHarvest)}</b>.
-            </span>
-          )}
-        </Text>
-      </Box>
+          <Text
+            color="white"
+            fontSize="12px"
+            fontWeight="normal"
+            textAlign={isMobile ? 'left' : 'right'}
+            width={'100%'}
+          >
+            Harvested{' '}
+            <b>
+              {getDisplayCurrencyAmount(
+                harvestTime?.data?.totalStrkHarvestedByContract.STRKAmount || 0,
+                2,
+              )}{' '}
+              STRK
+            </b>{' '}
+            over <b>{harvestTime?.data?.totalHarvestsByContract} claims.</b>{' '}
+            {lastHarvest && (
+              <span>
+                Last harvested <b>{timeAgo(lastHarvest)}</b>.
+              </span>
+            )}
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 };

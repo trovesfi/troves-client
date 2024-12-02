@@ -81,7 +81,7 @@ const ShareOnX = () => {
         </div>
 
         <Link
-          href="https://hemant.lol"
+          href="https://x.com/strkfarm/status/1853367850922365025"
           target="_blank"
           className="border border-[#36E780] text-white group-hover:border-black group-hover:text-black px-4 py-1 text-sm font-bold rounded-[20px] transition-all active:scale-90 ml-16 lg:ml-0 -mt-3"
           onClick={!isSharedOnX && !initialLoading ? handleShare : () => {}}
