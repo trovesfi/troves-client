@@ -59,8 +59,12 @@ export class NimboraDex extends IDapp<NimboraDexDoc> {
         .filter(this.commonVaultFilter)
         .forEach((poolName) => {
           const poolData: NimboraDexDoc = data[poolName];
-          const category = Category.Others;
+          let category = Category.Others;
           const riskFactor = 0.75;
+
+          if (poolName == 'USDC') {
+            category = Category.Stable;
+          }
 
           const logo =
             CONSTANTS.LOGOS[poolName as keyof typeof CONSTANTS.LOGOS];
@@ -102,7 +106,7 @@ export class NimboraDex extends IDapp<NimboraDexDoc> {
               },
             ],
             category,
-            type: PoolType.DEXV2,
+            type: PoolType.Derivatives,
             lending: {
               collateralFactor: 0,
             },
