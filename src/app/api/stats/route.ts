@@ -2,6 +2,8 @@ import { getStrategies } from '@/store/strategies.atoms';
 import { NextResponse } from 'next/server';
 
 export const revalidate = 1800;
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(_req: Request) {
   const strategies = getStrategies();

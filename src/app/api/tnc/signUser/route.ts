@@ -8,6 +8,9 @@ import { toBigInt } from 'ethers';
 import Mixpanel from 'mixpanel';
 const mixpanel = Mixpanel.init('118f29da6a372f0ccb6f541079cad56b');
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   const { address, signature } = await req.json();
 

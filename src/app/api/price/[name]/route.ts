@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 
 export const revalidate = 300; // 5 mins
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 // only meant for backend calls
 async function initRedis() {

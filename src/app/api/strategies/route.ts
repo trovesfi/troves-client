@@ -11,6 +11,8 @@ import { IStrategy, NFTInfo, TokenInfo } from '@/strategies/IStrategy';
 import { STRKFarmStrategyAPIResult } from '@/store/strkfarm.atoms';
 
 export const revalidate = 3600; // 1 hr
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 const allPoolsAtom = atom<PoolInfo[]>((get) => {
   const pools: PoolInfo[] = [];

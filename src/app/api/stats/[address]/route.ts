@@ -3,6 +3,8 @@ import { standariseAddress } from '@/utils';
 import { NextResponse } from 'next/server';
 
 export const revalidate = 0;
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(_req: Request, context: any) {
   const { params } = context;
