@@ -6,11 +6,20 @@ export const config = {
   matcher: ['/api/:path*'],
 };
 
+const RATE_LIMIT_REQUESTS = parseInt(
+  process.env.RATE_LIMIT_REQUESTS || '20',
+  10,
+);
+const RATE_LIMIT_WINDOW = process.env.RATE_LIMIT_WINDOW || '10 s';
+
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(20, '10 s'),
-  prefix: '@upstash/ratelimit',
+  limiter: Ratelimit.slidingWindow(
+    RATE_LIMIT_REQUESTS,
+    RATE_LIMIT_WINDOW as `${number} s`,
+  ),
   analytics: true,
+  prefix: '@upstash/ratelimit',
 });
 
 export async function middleware(request: NextRequest) {
@@ -31,12 +40,16 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  if (!success) {
-    return NextResponse.json(
-      { message: 'Rate limit exceeded', limit, remaining, reset },
-      { status: 429 },
-    );
-  }
+  const response = success
+    ? NextResponse.next()
+    : NextResponse.json(
+        { message: 'Rate limit exceeded', limit, remaining, reset },
+        { status: 429 },
+      );
 
-  return NextResponse.next();
+  response.headers.set('X-RateLimit-Limit', limit.toString());
+  response.headers.set('X-RateLimit-Remaining', remaining.toString());
+  response.headers.set('X-RateLimit-Reset', reset.toString());
+
+  return response;
 }
