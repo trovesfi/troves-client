@@ -34,6 +34,7 @@ export async function middleware(request: NextRequest) {
     remaining = result.remaining;
     reset = result.reset;
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { message: 'Internal Server Error' },
       { status: 500 },
