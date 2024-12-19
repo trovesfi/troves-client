@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 
 import { db } from '@/db';
 import { standariseAddress } from '@/utils';
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request, context: any) {
   const { params } = context;

@@ -4,6 +4,9 @@ import { db } from '@/db';
 import { getStrategies } from '@/store/strategies.atoms';
 import { standariseAddress } from '@/utils';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   const { address, type } = await req.json();
 

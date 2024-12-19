@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { standariseAddress } from '@/utils';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 function isSixDigitAlphanumeric(str: string) {
   const regex = /^[a-zA-Z0-9]{6}$/;
   return regex.test(str);

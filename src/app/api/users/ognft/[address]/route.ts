@@ -4,6 +4,8 @@ import { standariseAddress } from '../../../../../utils';
 import OGNFTUsersJson from '../../../../../../public/og_nft_eligible_users.json';
 
 export const revalidate = 3600;
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request, context: any) {
   try {
