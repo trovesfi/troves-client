@@ -170,11 +170,13 @@ export class Ekubo extends IDapp<EkuboBaseAprDoc> {
       'ETH/USDC',
       'STRK/USDC',
       'STRK/ETH',
+      'kSTRK/STRK',
       'USDC/USDT',
       'USDC',
       'USDT',
       'ETH',
       'STRK',
+      'kSTRK',
     ];
     console.log('filter2', poolName, supportedPools.includes(poolName));
     return supportedPools.includes(poolName);
