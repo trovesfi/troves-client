@@ -2,22 +2,22 @@ import strkfarmLogo from '@public/logo.png';
 import { atom } from 'jotai';
 import CarmineAtoms, { carmine } from './carmine.store';
 import EkuboAtoms, { ekubo } from './ekobu.store';
+import EndurAtoms, { endur } from './endur.store';
 import HaikoAtoms, { haiko } from './haiko.store';
 import HashstackAtoms, { hashstack } from './hashstack.store';
 import MySwapAtoms, { mySwap } from './myswap.store';
+import NimboraDexAtoms, { nimboraDex } from './nimboradex.store';
 import NostraDegenAtoms, { nostraDegen } from './nostradegen.store';
 import NostraDexAtoms, { nostraDex } from './nostradex.store';
 import NostraLendingAtoms, { nostraLending } from './nostralending.store';
-import VesuAtoms, { vesu } from './vesu.store';
-import ZkLendAtoms, { zkLend } from './zklend.store';
-import NimboraDexAtoms, { nimboraDex } from './nimboradex.store';
 import { Category, PoolInfo, PoolType } from './pools';
 import { getLiveStatusEnum } from './strategies.atoms';
 import STRKFarmAtoms, {
   strkfarm,
   STRKFarmStrategyAPIResult,
 } from './strkfarm.atoms';
-import EndurAtoms, { endur } from './endur.store';
+import VesuAtoms, { vesu } from './vesu.store';
+import ZkLendAtoms, { zkLend } from './zklend.store';
 
 export const PROTOCOLS = [
   {

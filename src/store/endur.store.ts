@@ -2,16 +2,16 @@ import { atom } from 'jotai';
 
 import RewardsAbi from '@/abi/rewards.abi.json';
 
-import { IDapp } from './IDapp.store';
-import { Category, PoolInfo, PoolType } from './pools';
 import CONSTANTS, { provider } from '@/constants';
-import { getTokenInfoFromName } from '@/utils';
-import { StrategyLiveStatus } from '@/strategies/IStrategy';
-import { Contract } from 'starknet';
-import MyNumber from '@/utils/MyNumber';
 import { AutoXSTRKStrategy } from '@/strategies/auto_xstrk.strat';
+import { StrategyLiveStatus } from '@/strategies/IStrategy';
+import { getTokenInfoFromName } from '@/utils';
 import { customAtomWithFetch } from '@/utils/customAtomWithFetch';
 import { customAtomWithQuery } from '@/utils/customAtomWithQuery';
+import MyNumber from '@/utils/MyNumber';
+import { Contract } from 'starknet';
+import { IDapp } from './IDapp.store';
+import { Category, PoolInfo, PoolType } from './pools';
 
 interface PoolData {
   tvl: number;
