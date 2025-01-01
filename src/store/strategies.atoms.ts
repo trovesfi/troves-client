@@ -9,8 +9,11 @@ import CONSTANTS from '@/constants';
 import { DeltaNeutralMM } from '@/strategies/delta_neutral_mm';
 import Mustache from 'mustache';
 import { getTokenInfoFromName } from '@/utils';
-import { allPoolsAtomUnSorted } from './protocols';
+import { allPoolsAtomUnSorted, privatePoolsAtom } from './protocols';
 import { DeltaNeutralMM2 } from '@/strategies/delta_neutral_mm_2';
+import { AutoXSTRKStrategy } from '@/strategies/auto_xstrk.strat';
+import EndurAtoms, { endur } from './endur.store';
+import { getDefaultPoolInfo, PoolInfo } from './pools';
 
 export interface StrategyInfo extends IStrategyProps {
   name: string;
@@ -72,6 +75,13 @@ export function getStrategies() {
     StrategyLiveStatus.ACTIVE,
     {
       maxTVL: 1000,
+      alerts: [
+        {
+          type: 'info',
+          text: 'Pro tip: Try to split your deposit between this strategy and ETH Sensei XL to avoid impact of yield fluctuations',
+          tab: 'deposit',
+        },
+      ],
     },
   );
   const deltaNeutralMMSTRKETH = new DeltaNeutralMM(
@@ -98,6 +108,24 @@ export function getStrategies() {
     StrategyLiveStatus.NEW,
     {
       maxTVL: 2000,
+      alerts: [
+        {
+          type: 'info',
+          text: 'Pro tip: Try to split your deposit between this strategy and ETH Sensei to avoid impact of yield fluctuations',
+          tab: 'deposit',
+        },
+      ],
+    },
+  );
+
+  const xSTRKStrategy = new AutoXSTRKStrategy(
+    'Stake STRK',
+    'Endur is Starknet’s dedicated staking platform, where you can stake STRK to earn staking rewards. This strategy, built on Endur, is an incentivized vault that boosts returns by offering additional rewards. In the future, it may transition to auto-compounding on DeFi Spring, reinvesting rewards for maximum growth. Changes will be announced at least three days in advance on our socials.',
+    CONSTANTS.CONTRACTS.AutoxSTRKFarm,
+    {
+      maxTVL: 2000000,
+      alerts: [],
+      is_promoted: true,
     },
   );
 
@@ -108,6 +136,7 @@ export function getStrategies() {
     deltaNeutralMMETHUSDC,
     deltaNeutralMMSTRKETH,
     deltaNeutralMMETHUSDCReverse,
+    // xSTRKStrategy,
   ];
 
   return strategies;
@@ -115,15 +144,35 @@ export function getStrategies() {
 
 export const STRATEGIES_INFO = getStrategies();
 
+export const getPrivatePools = (get: any) => {
+  // A placeholder to fetch any external pools/rewards info
+  // that is not necessarily available in the allPools (i.e. not public)
+  const endurRewardInfo = get(EndurAtoms.rewardInfo);
+  const endurRewardPoolInfo = getDefaultPoolInfo();
+  endurRewardPoolInfo.pool.id = 'endur_strk_reward';
+  endurRewardPoolInfo.protocol.name = endur.name;
+  endurRewardPoolInfo.protocol.link = endur.link;
+  endurRewardPoolInfo.protocol.logo = endur.logo;
+  endurRewardPoolInfo.pool.name = 'STRK';
+  endurRewardPoolInfo.pool.logos = [getTokenInfoFromName('STRK').logo];
+  endurRewardPoolInfo.apr = endurRewardInfo.data || 0;
+
+  return [endurRewardPoolInfo];
+};
+
 export const strategiesAtom = atom<StrategyInfo[]>((get) => {
   const strategies = getStrategies();
   const allPools = get(allPoolsAtomUnSorted);
   const requiredPools = allPools.filter(
-    (p) => p.protocol.name === 'zkLend' || p.protocol.name === 'Nostra',
+    (p) =>
+      p.protocol.name === 'zkLend' ||
+      p.protocol.name === 'Nostra' ||
+      p.protocol.name === endur.name,
   );
 
+  const privatePools: PoolInfo[] = get(privatePoolsAtom);
   for (const s of strategies) {
-    s.solve(requiredPools, '1000');
+    s.solve([...requiredPools, ...privatePools], '1000');
   }
 
   strategies.sort((a, b) => {
@@ -141,6 +190,8 @@ export function getLiveStatusNumber(status: StrategyLiveStatus) {
     return 2;
   } else if (status == StrategyLiveStatus.COMING_SOON) {
     return 3;
+  } else if (status == StrategyLiveStatus.HOT) {
+    return 5;
   }
   return 4;
 }
@@ -152,6 +203,8 @@ export function getLiveStatusEnum(status: number) {
     return StrategyLiveStatus.ACTIVE;
   } else if (status == 3) {
     return StrategyLiveStatus.COMING_SOON;
+  } else if (status == 5) {
+    return StrategyLiveStatus.HOT;
   }
   return StrategyLiveStatus.RETIRED;
 }

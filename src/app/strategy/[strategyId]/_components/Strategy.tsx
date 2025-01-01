@@ -330,20 +330,22 @@ const Strategy = ({ params }: StrategyParams) => {
                       />
                       {strategy.settings.alerts != undefined && (
                         <VStack mt={'20px'}>
-                          {strategy.settings.alerts.map((alert, index) => (
-                            <Alert
-                              status="warning"
-                              fontSize={'12px'}
-                              color={'orange'}
-                              borderRadius={'10px'}
-                              bg="color2_50p"
-                              padding={'10px'}
-                              key={index}
-                            >
-                              <AlertIcon />
-                              {alert.text}
-                            </Alert>
-                          ))}
+                          {strategy.settings.alerts
+                            .filter((a) => a.tab == 'deposit')
+                            .map((alert, index) => (
+                              <Alert
+                                status={alert.type}
+                                fontSize={'12px'}
+                                color={'light_grey'}
+                                borderRadius={'10px'}
+                                bg="color2_50p"
+                                padding={'10px'}
+                                key={index}
+                              >
+                                <AlertIcon />
+                                {alert.text}
+                              </Alert>
+                            ))}
                         </VStack>
                       )}
                     </TabPanel>
@@ -358,6 +360,26 @@ const Strategy = ({ params }: StrategyParams) => {
                         buttonText="Redeem"
                         callsInfo={strategy.withdrawMethods}
                       />
+                      {strategy.settings.alerts != undefined && (
+                        <VStack mt={'20px'}>
+                          {strategy.settings.alerts
+                            .filter((a) => a.tab == 'withdraw')
+                            .map((alert, index) => (
+                              <Alert
+                                status={alert.type}
+                                fontSize={'12px'}
+                                color={'light_grey'}
+                                borderRadius={'10px'}
+                                bg="color2_50p"
+                                padding={'10px'}
+                                key={index}
+                              >
+                                <AlertIcon />
+                                {alert.text}
+                              </Alert>
+                            ))}
+                        </VStack>
+                      )}
                     </TabPanel>
                   </TabPanels>
                 </Tabs>

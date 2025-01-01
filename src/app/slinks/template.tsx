@@ -1,6 +1,6 @@
 'use client';
 
-import Navbar, { MYCONNECTORS } from '@/components/Navbar';
+import Navbar, { getConnectors } from '@/components/Navbar';
 import { MY_STORE } from '@/store';
 import {
   Center,
@@ -16,6 +16,7 @@ import mixpanel from 'mixpanel-browser';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
+import { isMobile } from 'react-device-detect';
 import { Toaster } from 'react-hot-toast';
 import { RpcProviderOptions, constants } from 'starknet';
 
@@ -96,7 +97,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
       <StarknetConfig
         chains={chains}
         provider={provider}
-        connectors={MYCONNECTORS}
+        connectors={getConnectors(isMobile)}
       >
         <ChakraBaseProvider theme={theme}>
           <Flex minHeight={'100vh'} bgColor={'bg'}>

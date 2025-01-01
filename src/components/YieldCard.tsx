@@ -5,7 +5,7 @@ import { PoolInfo } from '@/store/pools';
 import { getPoolInfoFromStrategy, sortAtom } from '@/store/protocols';
 import { STRKFarmStrategyAPIResult } from '@/store/strkfarm.atoms';
 import { UserStats, userStatsAtom } from '@/store/utils.atoms';
-import { StrategyLiveStatus } from '@/strategies/IStrategy';
+import { isLive, StrategyLiveStatus } from '@/strategies/IStrategy';
 import { getDisplayCurrencyAmount } from '@/utils';
 import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import {
@@ -31,6 +31,7 @@ import {
 } from '@chakra-ui/react';
 import { useAtomValue } from 'jotai';
 import mixpanel from 'mixpanel-browser';
+import { isMobile } from 'react-device-detect';
 import { FaWallet } from 'react-icons/fa';
 
 interface YieldCardProps {
@@ -40,14 +41,17 @@ interface YieldCardProps {
 }
 
 function getStratCardBg(status: StrategyLiveStatus, index: number) {
-  if (status == StrategyLiveStatus.ACTIVE || status == StrategyLiveStatus.NEW) {
+  if (status == StrategyLiveStatus.HOT) {
+    return '#414173';
+  }
+  if (isLive(status)) {
     return index % 2 === 0 ? 'color1_50p' : 'color2_50p';
   }
   return 'bg';
 }
 
 function getStratCardBadgeBg(status: StrategyLiveStatus) {
-  if (status === StrategyLiveStatus.NEW) {
+  if (isLive(status)) {
     return 'cyan';
   } else if (status === StrategyLiveStatus.COMING_SOON) {
     return 'yellow';
@@ -197,12 +201,6 @@ function StrategyAPY(props: YieldCardProps) {
         </Tooltip>
       )}
     </Box>
-  );
-}
-
-function isLive(status: StrategyLiveStatus) {
-  return (
-    status === StrategyLiveStatus.ACTIVE || status === StrategyLiveStatus.NEW
   );
 }
 
@@ -468,7 +466,7 @@ function StrategyMobileCard(props: YieldCardProps) {
 function getLinkProps(pool: PoolInfo, showProtocolName?: boolean) {
   return {
     href: pool.protocol.link,
-    target: '_blank',
+    target: isMobile ? '_self' : '_blank',
     onClick: () => {
       mixpanel.track('Pool clicked', {
         pool: pool.pool.name,
@@ -488,7 +486,7 @@ export default function YieldCard(props: YieldCardProps) {
     <>
       <Tr
         color={'white'}
-        bg={index % 2 == 0 ? 'color1_50p' : 'color2_50p'}
+        bg={getStratCardBg(pool.additional.tags[0], index)}
         display={{ base: 'none', md: 'table-row' }}
         as={'a'}
         {...getLinkProps(pool, props.showProtocolName)}

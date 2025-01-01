@@ -24,9 +24,7 @@ jobs:
       
       - name: Setup env
         run: |
-          touch .env.local
-          echo "NEXT_PUBLIC_RPC_URL=${{secrets.RPC_URL}}" >> .env.local
-          echo "RPC_URL=${{secrets.RPC_URL}}" >> .env.local
+          cp .env.sample .env
           
       - name: Run linting check
         run: yarn run lint:check

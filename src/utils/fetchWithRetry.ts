@@ -1,5 +1,3 @@
-import toast from 'react-hot-toast';
-
 async function fetchWithRetry(
   url: string,
   options: any = {},
@@ -20,9 +18,9 @@ async function fetchWithRetry(
     } catch (error) {
       if (i === maxRetries - 1) {
         console.error(`Error fetching ${url} : `, error);
-        toast.error(errorToast, {
-          position: 'bottom-right',
-        });
+        // toast.error(errorToast, {
+        //   position: 'bottom-right',
+        // });
         return null;
       }
       await new Promise((resolve) => setTimeout(resolve, delay));

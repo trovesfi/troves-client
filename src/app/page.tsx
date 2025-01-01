@@ -32,9 +32,14 @@ import { isMobile } from 'react-device-detect';
 
 const banner_images = [
   {
+    desktop: '/banners/strkfarm_braavos.jpg',
+    mobile: '/banners/strkfarm_braavos.jpg',
+    link: 'https://x.com/strkfarm/status/1871870516686209314',
+  },
+  {
     desktop: '/banners/endur.svg',
     mobile: '/banners/endur_mobile.svg',
-    link: 'https://endur.fi',
+    link: 'https://endur.fi/r/strkfarm',
   },
   {
     desktop: '/banners/seed_grant.svg',
@@ -114,7 +119,7 @@ export default function Home() {
       </Box>
 
       <Box className="embla" ref={emblaRef} margin={0} width={'100%'}>
-        <Box className="embla__container">
+        <Box className="embla__container" cursor={'pointer'}>
           {banner_images.map((banner, index) => (
             <Box
               className="embla__slide"

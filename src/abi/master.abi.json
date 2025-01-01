@@ -1,12 +1,12 @@
 [
   {
-    "name": "ExternalImpl",
     "type": "impl",
+    "name": "ExternalImpl",
     "interface_name": "strkfarm::strats::master::IMaster"
   },
   {
-    "name": "core::integer::u256",
     "type": "struct",
+    "name": "core::integer::u256",
     "members": [
       {
         "name": "low",
@@ -19,12 +19,22 @@
     ]
   },
   {
-    "name": "strkfarm::strats::master::IMaster",
+    "type": "struct",
+    "name": "strkfarm::strats::master::Settings",
+    "members": [
+      {
+        "name": "nimbora_referral",
+        "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ]
+  },
+  {
     "type": "interface",
+    "name": "strkfarm::strats::master::IMaster",
     "items": [
       {
-        "name": "invest_auto_strk",
         "type": "function",
+        "name": "invest_auto_strk",
         "inputs": [
           {
             "name": "strategy",
@@ -47,8 +57,71 @@
         "state_mutability": "external"
       },
       {
-        "name": "upgrade",
         "type": "function",
+        "name": "deposit_nimbora",
+        "inputs": [
+          {
+            "name": "nimbora_strategy_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "harvest_invest_strategy",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "token_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "assets",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_settings",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "strkfarm::strats::master::Settings"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "invest_to_xstrk_auto",
+        "inputs": [
+          {
+            "name": "strategy",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "amount",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "receiver",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "upgrade",
         "inputs": [
           {
             "name": "class_hash",
@@ -61,17 +134,17 @@
     ]
   },
   {
-    "name": "OwnableTwoStepImpl",
     "type": "impl",
-    "interface_name": "openzeppelin::access::ownable::interface::IOwnableTwoStep"
+    "name": "OwnableTwoStepImpl",
+    "interface_name": "openzeppelin_access::ownable::interface::IOwnableTwoStep"
   },
   {
-    "name": "openzeppelin::access::ownable::interface::IOwnableTwoStep",
     "type": "interface",
+    "name": "openzeppelin_access::ownable::interface::IOwnableTwoStep",
     "items": [
       {
+        "type": "function",
         "name": "owner",
-        "type": "function",
         "inputs": [],
         "outputs": [
           {
@@ -81,8 +154,8 @@
         "state_mutability": "view"
       },
       {
+        "type": "function",
         "name": "pending_owner",
-        "type": "function",
         "inputs": [],
         "outputs": [
           {
@@ -92,15 +165,15 @@
         "state_mutability": "view"
       },
       {
-        "name": "accept_ownership",
         "type": "function",
+        "name": "accept_ownership",
         "inputs": [],
         "outputs": [],
         "state_mutability": "external"
       },
       {
-        "name": "transfer_ownership",
         "type": "function",
+        "name": "transfer_ownership",
         "inputs": [
           {
             "name": "new_owner",
@@ -111,8 +184,8 @@
         "state_mutability": "external"
       },
       {
-        "name": "renounce_ownership",
         "type": "function",
+        "name": "renounce_ownership",
         "inputs": [],
         "outputs": [],
         "state_mutability": "external"
@@ -120,115 +193,157 @@
     ]
   },
   {
-    "name": "constructor",
+    "type": "struct",
+    "name": "strkfarm::interfaces::zkLend::IZkLendMarketDispatcher",
+    "members": [
+      {
+        "name": "contract_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "strkfarm::interfaces::oracle::IPriceOracleDispatcher",
+    "members": [
+      {
+        "name": "contract_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "strkfarm::components::zkLend::zkLendStruct",
+    "members": [
+      {
+        "name": "zkLendRouter",
+        "type": "strkfarm::interfaces::zkLend::IZkLendMarketDispatcher"
+      },
+      {
+        "name": "oracle",
+        "type": "strkfarm::interfaces::oracle::IPriceOracleDispatcher"
+      }
+    ]
+  },
+  {
     "type": "constructor",
+    "name": "constructor",
     "inputs": [
       {
         "name": "owner",
         "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "lend_settings",
+        "type": "strkfarm::components::zkLend::zkLendStruct"
+      },
+      {
+        "name": "nimbora_referral",
+        "type": "core::starknet::contract_address::ContractAddress"
       }
     ]
   },
   {
-    "kind": "enum",
-    "name": "openzeppelin::security::reentrancyguard::ReentrancyGuardComponent::Event",
     "type": "event",
+    "name": "openzeppelin_security::reentrancyguard::ReentrancyGuardComponent::Event",
+    "kind": "enum",
     "variants": []
   },
   {
-    "kind": "struct",
-    "name": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferred",
     "type": "event",
+    "name": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferred",
+    "kind": "struct",
     "members": [
       {
-        "kind": "key",
         "name": "previous_owner",
-        "type": "core::starknet::contract_address::ContractAddress"
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
       },
       {
-        "kind": "key",
         "name": "new_owner",
-        "type": "core::starknet::contract_address::ContractAddress"
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
       }
     ]
   },
   {
-    "kind": "struct",
-    "name": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
     "type": "event",
+    "name": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
+    "kind": "struct",
     "members": [
       {
-        "kind": "key",
         "name": "previous_owner",
-        "type": "core::starknet::contract_address::ContractAddress"
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
       },
       {
-        "kind": "key",
         "name": "new_owner",
-        "type": "core::starknet::contract_address::ContractAddress"
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
       }
     ]
   },
   {
+    "type": "event",
+    "name": "openzeppelin_access::ownable::ownable::OwnableComponent::Event",
     "kind": "enum",
-    "name": "openzeppelin::access::ownable::ownable::OwnableComponent::Event",
-    "type": "event",
     "variants": [
       {
-        "kind": "nested",
         "name": "OwnershipTransferred",
-        "type": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferred"
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferred",
+        "kind": "nested"
       },
       {
-        "kind": "nested",
         "name": "OwnershipTransferStarted",
-        "type": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferStarted"
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
+        "kind": "nested"
       }
     ]
   },
   {
-    "kind": "struct",
-    "name": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Upgraded",
     "type": "event",
+    "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
+    "kind": "struct",
     "members": [
       {
-        "kind": "data",
         "name": "class_hash",
-        "type": "core::starknet::class_hash::ClassHash"
+        "type": "core::starknet::class_hash::ClassHash",
+        "kind": "data"
       }
     ]
   },
   {
-    "kind": "enum",
-    "name": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Event",
     "type": "event",
+    "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
+    "kind": "enum",
     "variants": [
       {
-        "kind": "nested",
         "name": "Upgraded",
-        "type": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Upgraded"
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
+        "kind": "nested"
       }
     ]
   },
   {
-    "kind": "enum",
-    "name": "strkfarm::strats::master::Master::Event",
     "type": "event",
+    "name": "strkfarm::strats::master::Master::Event",
+    "kind": "enum",
     "variants": [
       {
-        "kind": "flat",
         "name": "ReentrancyGuardEvent",
-        "type": "openzeppelin::security::reentrancyguard::ReentrancyGuardComponent::Event"
+        "type": "openzeppelin_security::reentrancyguard::ReentrancyGuardComponent::Event",
+        "kind": "flat"
       },
       {
-        "kind": "flat",
         "name": "OwnableEvent",
-        "type": "openzeppelin::access::ownable::ownable::OwnableComponent::Event"
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::Event",
+        "kind": "flat"
       },
       {
-        "kind": "flat",
         "name": "UpgradeableEvent",
-        "type": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Event"
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
+        "kind": "flat"
       }
     ]
   }

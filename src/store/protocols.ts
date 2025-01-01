@@ -2,9 +2,11 @@ import strkfarmLogo from '@public/logo.png';
 import { atom } from 'jotai';
 import CarmineAtoms, { carmine } from './carmine.store';
 import EkuboAtoms, { ekubo } from './ekobu.store';
+import EndurAtoms, { endur } from './endur.store';
 import HaikoAtoms, { haiko } from './haiko.store';
 import HashstackAtoms, { hashstack } from './hashstack.store';
 import MySwapAtoms, { mySwap } from './myswap.store';
+import NimboraDexAtoms, { nimboraDex } from './nimboradex.store';
 import NostraDegenAtoms, { nostraDegen } from './nostradegen.store';
 import NostraDexAtoms, { nostraDex } from './nostradex.store';
 import NostraLendingAtoms, { nostraLending } from './nostralending.store';
@@ -18,11 +20,11 @@ import VesuAtoms, { vesu } from './vesu.store';
 import ZkLendAtoms, { zkLend } from './zklend.store';
 
 export const PROTOCOLS = [
-  // {
-  //   name: endur.name,
-  //   class: endur,
-  //   atoms: EndurAtoms,
-  // },
+  {
+    name: endur.name,
+    class: endur,
+    atoms: EndurAtoms,
+  },
   {
     name: strkfarm.name,
     class: strkfarm,
@@ -98,11 +100,11 @@ export const PROTOCOLS = [
     class: vesu,
     atoms: VesuAtoms,
   },
-  // {
-  //   name: nimbora.name,
-  //   class: nimbora,
-  //   atoms: NimboraAtoms,
-  // }
+  {
+    name: nimboraDex.name,
+    class: nimboraDex,
+    atoms: NimboraDexAtoms,
+  },
 ];
 
 export const ALL_FILTER = 'All';
@@ -147,6 +149,27 @@ export const updateFiltersAtom = atom(
     }
   },
 );
+
+const privateProtocols = [
+  {
+    name: endur.name,
+    class: endur,
+    atoms: EndurAtoms,
+  },
+];
+
+export const privatePoolsAtom = atom((get) => {
+  // const pools: PoolInfo[] = [];
+  // const otherPools = getPrivatePools(get);
+  // return [
+  //   ...privateProtocols.reduce(
+  //     (_pools, p) => _pools.concat(get(p.atoms.pools)),
+  //     pools,
+  //   ),
+  //   ...otherPools,
+  // ];
+  return [] as PoolInfo[];
+});
 
 export const allPoolsAtomUnSorted = atom((get) => {
   const pools: PoolInfo[] = [];
@@ -199,6 +222,7 @@ export function getPoolInfoFromStrategy(
       tags: [getLiveStatusEnum(strat.status.number)],
       isAudited: strat.name.includes('XL') ? false : true,
       leverage: strat.leverage,
+      is_promoted: strat.name.includes('Stake'),
     },
   };
 }

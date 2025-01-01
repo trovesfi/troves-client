@@ -1,6 +1,7 @@
 import { NFTInfo, TokenInfo } from './strategies/IStrategy';
 import MyNumber from './utils/MyNumber';
-import { getEndpoint } from './utils';
+import { getEndpoint, standariseAddress } from './utils';
+import { constants, RpcProvider } from 'starknet';
 
 const LOGOS = {
   USDT: '/zklend/icons/tokens/usdt.svg?w=20',
@@ -32,6 +33,11 @@ const CONSTANTS = {
   ZKLEND: {
     BASE_APR_API: '/zklend/api/pools',
   },
+  NIMBORA: {
+    DEX_APR_API: '/nimbora/yield-dex/strategies',
+    AGGREGATOR_APR_API: '/nimbora/aggregator/strategies',
+    LIQUIDITY_APR_API: '/nimbora/liquity/strategies',
+  },
   JEDI: {
     BASE_API: '/jediswap/graphql',
   },
@@ -56,6 +62,8 @@ const CONSTANTS = {
       '0x541681b9ad63dff1b35f79c78d8477f64857de29a27902f7298f7b620838ea',
     AutoUsdcFarm:
       '0x16912b22d5696e95ffde888ede4bd69fbbc60c5f873082857a47c543172694f',
+    AutoxSTRKFarm:
+      '0x2102068cf222a37076b9e322c6428cb9e7110591c8df8a733df2110fdb0c329',
     DeltaNeutralMMUSDCETH:
       '0x04937b58e05a3a2477402d1f74e66686f58a61a5070fcc6f694fb9a0b3bae422',
     DeltaNeutralMMSTRKETH:
@@ -81,8 +89,24 @@ export const TOKENS: TokenInfo[] = [
     isERC4626: false,
   },
   {
-    token: '0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
+    token: standariseAddress(
+      '0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
+    ),
     name: 'STRK',
+    decimals: 18,
+    displayDecimals: 2,
+    logo: CONSTANTS.LOGOS.STRK,
+    minAmount: MyNumber.fromEther('10', 18),
+    maxAmount: MyNumber.fromEther('10000', 18),
+    stepAmount: MyNumber.fromEther('10', 18),
+    isERC4626: false,
+  },
+  // ! todo change this
+  {
+    token: standariseAddress(
+      '0x28d709c875c0ceac3dce7065bec5328186dc89fe254527084d1689910954b0a',
+    ),
+    name: 'xSTRK',
     decimals: 18,
     displayDecimals: 2,
     logo: CONSTANTS.LOGOS.STRK,
@@ -179,6 +203,17 @@ export const TOKENS: TokenInfo[] = [
     stepAmount: MyNumber.fromEther('10', 6),
     isERC4626: true,
   },
+  {
+    token: CONSTANTS.CONTRACTS.AutoxSTRKFarm,
+    name: 'frmxSTRK',
+    decimals: 18,
+    displayDecimals: 2,
+    logo: CONSTANTS.LOGOS.STRK,
+    minAmount: MyNumber.fromEther('0.01', 18),
+    maxAmount: MyNumber.fromEther('10000', 18),
+    stepAmount: MyNumber.fromEther('0.01', 18),
+    isERC4626: true,
+  },
 ];
 
 export const NFTS: NFTInfo[] = [
@@ -216,6 +251,17 @@ export const NFTS: NFTInfo[] = [
   },
 ];
 
+function getNetwork(): constants.StarknetChainId {
+  if (process.env.NEXT_PUBLIC_NETWORK == 'sepolia') {
+    return constants.StarknetChainId.SN_SEPOLIA;
+  }
+  return constants.StarknetChainId.SN_MAIN;
+}
+
+export const provider = new RpcProvider({
+  nodeUrl: process.env.NEXT_PUBLIC_RPC_URL,
+});
+
 // ? When updating this, ensure there is redirect available for this route
 // ? to respect version of doc in github
 export const LATEST_TNC_DOC_VERSION = 'tnc/v1';
@@ -236,7 +282,7 @@ export const SIGNING_DATA = {
   domain: {
     name: 'STRKFarm',
     version: '1',
-    chainId: '0x534e5f4d41494e',
+    chainId: getNetwork(),
   },
   message: {
     message: 'Read and Agree T&C',

@@ -65,7 +65,7 @@ export default class MyNumber {
     return this.bigNumber[command](fullNum);
   }
 
-  operate(command: 'div' | 'plus', value: string | number) {
+  operate(command: 'div' | 'plus' | 'mul', value: string | number) {
     const bn = new BigNumber(Number(value).toFixed(6));
     return new MyNumber(this.bigNumber[command](bn).toFixed(0), this.decimals);
   }

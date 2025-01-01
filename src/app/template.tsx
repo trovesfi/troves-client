@@ -1,6 +1,6 @@
 'use client';
 
-import Navbar, { MYCONNECTORS } from '@/components/Navbar';
+import Navbar, { getConnectors } from '@/components/Navbar';
 import { MY_STORE } from '@/store';
 import {
   Center,
@@ -20,6 +20,7 @@ import { Toaster } from 'react-hot-toast';
 import { RpcProviderOptions, constants } from 'starknet';
 
 import { Inter } from 'next/font/google';
+import { isMobile } from 'react-device-detect';
 const inter = Inter({ subsets: ['latin'] });
 
 mixpanel.init('118f29da6a372f0ccb6f541079cad56b');
@@ -108,7 +109,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
       <StarknetConfig
         chains={chains}
         provider={provider}
-        connectors={MYCONNECTORS}
+        connectors={getConnectors(isMobile)}
       >
         <ChakraBaseProvider theme={theme}>
           <Flex minHeight={'100vh'} bgColor={'bg'}>
