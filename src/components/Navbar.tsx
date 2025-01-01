@@ -53,13 +53,13 @@ import {
 import mixpanel from 'mixpanel-browser';
 import { useEffect, useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
+import { constants } from 'starknet';
 import {
   ArgentMobileConnector,
   isInArgentMobileAppBrowser,
 } from 'starknetkit/argentMobile';
 import { WebWalletConnector } from 'starknetkit/webwallet';
 import TncModal from './TncModal';
-import { constants } from 'starknet';
 
 export function getConnectors(isMobile: boolean) {
   const mobileConnector = ArgentMobileConnector.init({
@@ -85,6 +85,13 @@ export function getConnectors(isMobile: boolean) {
     },
   });
 
+  const keplrConnector = new InjectedConnector({
+    options: {
+      id: 'keplr',
+      name: 'Keplr',
+    },
+  });
+
   const webWalletConnector = new WebWalletConnector({
     url: 'https://web.argent.xyz',
   }) as StarknetkitConnector;
@@ -97,6 +104,7 @@ export function getConnectors(isMobile: boolean) {
   return [
     argentXConnector,
     braavosConnector,
+    keplrConnector,
     mobileConnector,
     webWalletConnector,
   ];
