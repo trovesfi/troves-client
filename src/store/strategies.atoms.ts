@@ -8,7 +8,6 @@ import CONSTANTS from '@/constants';
 import Mustache from 'mustache';
 import { getTokenInfoFromName } from '@/utils';
 import { allPoolsAtomUnSorted, privatePoolsAtom } from './protocols';
-import { AutoXSTRKStrategy } from '@/strategies/auto_xstrk.strat';
 import EndurAtoms, { endur } from './endur.store';
 import { getDefaultPoolInfo, PoolInfo } from './pools';
 import { AutoTokenStrategy } from '@/strategies/auto_strk.strat';
@@ -29,6 +28,7 @@ export function getStrategies() {
     CONSTANTS.CONTRACTS.AutoStrkFarm,
     {
       maxTVL: 2000000,
+      isAudited: true,
     },
   );
   const autoUSDCStrategy = new AutoTokenStrategy(
@@ -39,6 +39,7 @@ export function getStrategies() {
     CONSTANTS.CONTRACTS.AutoUsdcFarm,
     {
       maxTVL: 2000000,
+      isAudited: true,
     },
   );
 
@@ -61,6 +62,7 @@ export function getStrategies() {
     StrategyLiveStatus.NEW,
     {
       maxTVL: 1500000,
+      isAudited: true,
       // alerts,
     },
   );
@@ -82,6 +84,7 @@ export function getStrategies() {
           tab: 'deposit',
         },
       ],
+      isAudited: true,
     },
   );
   const deltaNeutralMMSTRKETH = new DeltaNeutralMM(
@@ -94,6 +97,7 @@ export function getStrategies() {
     StrategyLiveStatus.NEW,
     {
       maxTVL: 1500000,
+      isAudited: true,
       // alerts,
     },
   );
@@ -115,6 +119,7 @@ export function getStrategies() {
           tab: 'deposit',
         },
       ],
+      isAudited: false,
     },
   );
 
@@ -136,19 +141,20 @@ export function getStrategies() {
           tab: 'withdraw',
         },
       ],
+      isAudited: false,
     },
   );
 
-  const xSTRKStrategy = new AutoXSTRKStrategy(
-    'Stake STRK',
-    'Endur is Starknet’s dedicated staking platform, where you can stake STRK to earn staking rewards. This strategy, built on Endur, is an incentivized vault that boosts returns by offering additional rewards. In the future, it may transition to auto-compounding on DeFi Spring, reinvesting rewards for maximum growth. Changes will be announced at least three days in advance on our socials.',
-    CONSTANTS.CONTRACTS.AutoxSTRKFarm,
-    {
-      maxTVL: 2000000,
-      alerts: [],
-      is_promoted: true,
-    },
-  );
+  // const xSTRKStrategy = new AutoXSTRKStrategy(
+  //   'Stake STRK',
+  //   'Endur is Starknet’s dedicated staking platform, where you can stake STRK to earn staking rewards. This strategy, built on Endur, is an incentivized vault that boosts returns by offering additional rewards. In the future, it may transition to auto-compounding on DeFi Spring, reinvesting rewards for maximum growth. Changes will be announced at least three days in advance on our socials.',
+  //   CONSTANTS.CONTRACTS.AutoxSTRKFarm,
+  //   {
+  //     maxTVL: 2000000,
+  //     alerts: [],
+  //     is_promoted: true,
+  //   },
+  // );
 
   const strategies: IStrategy[] = [
     autoStrkStrategy,

@@ -28,7 +28,7 @@ export interface STRKFarmStrategyAPIResult {
   };
   riskFactor: number;
   logo: string;
-
+  isAudited: boolean;
   actions: {
     name: string;
     protocol: {
@@ -86,7 +86,7 @@ export class STRKFarm extends IDapp<STRKFarmStrategyAPIResult> {
         additional: {
           riskFactor,
           tags: [getLiveStatusEnum(rawPool.status.number)],
-          isAudited: poolName.includes('XL') ? false : true,
+          isAudited: rawPool.isAudited,
           is_promoted: poolName.includes('Stake'),
         },
       };

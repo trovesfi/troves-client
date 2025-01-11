@@ -82,6 +82,7 @@ export interface IStrategySettings {
   }[];
   hideHarvestInfo?: boolean;
   is_promoted?: boolean;
+  isAudited?: boolean;
 }
 
 export interface AmountInfo {

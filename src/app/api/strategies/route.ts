@@ -84,6 +84,7 @@ async function getStrategyInfo(
     },
     riskFactor: strategy.riskFactor,
     logo: strategy.holdingTokens[0].logo,
+    isAudited: strategy.settings.isAudited || false,
     actions: strategy.actions.map((action) => {
       return {
         name: action.name || '',

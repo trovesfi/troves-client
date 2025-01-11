@@ -222,7 +222,7 @@ export function getPoolInfoFromStrategy(
     additional: {
       riskFactor: strat.riskFactor,
       tags: [getLiveStatusEnum(strat.status.number)],
-      isAudited: strat.name.includes('XL') ? false : true,
+      isAudited: strat.isAudited,
       leverage: strat.leverage,
       is_promoted: strat.name.includes('Stake'),
     },
