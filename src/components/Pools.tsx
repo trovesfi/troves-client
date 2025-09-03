@@ -200,49 +200,39 @@ export default function Pools() {
           >
             <Thead
               display={{ base: 'none', md: 'table-header-group' }}
-              bg={'header'}
-              borderTopRadius={'12px'}
+              borderRadius="lg"
+              borderColor={'white'}
             >
-              <Tr color={'white'}>
+              <Tr color={'white'} borderRadius="12px">
                 <Th
                   borderLeftRadius={'lg'}
                   borderRightWidth={'1px'}
                   borderColor={'mybg'}
+                  bg={'header'}
                 >
                   <Text color="white">Pool name</Text>
                 </Th>
-                <Th
-                  float={'right'}
-                  borderRightWidth={'1px'}
-                  borderColor={'mybg'}
-                >
+                <Th borderRightWidth={'1px'} borderColor={'mybg'} bg={'header'}>
                   <HeaderSorter
                     heading="APY"
-                    align="left"
+                    align="right"
                     mainColor="white"
                     inActiveColor="text_secondary_2"
                     onClick={handleSortChange('APR')}
                     active={aprStatus}
                   />
                 </Th>
-                <Th borderRightWidth={'1px'} borderColor={'mybg'}>
-                  <Box width={'100%'} display={'flex'} justifyContent={'right'}>
-                    <HeaderSorter
-                      heading="Risk"
-                      align="left"
-                      mainColor="white"
-                      inActiveColor="text_secondary_2"
-                      onClick={handleSortChange('RISK')}
-                      active={riskStatus}
-                    />
-                  </Box>
+                <Th borderRightWidth={'1px'} borderColor={'mybg'} bg={'header'}>
+                  <HeaderSorter
+                    heading="Risk"
+                    align="right"
+                    mainColor="white"
+                    inActiveColor="text_secondary_2"
+                    onClick={handleSortChange('RISK')}
+                    active={riskStatus}
+                  />
                 </Th>
-                <Th
-                  float={'right'}
-                  borderRightRadius={'lg'}
-                  borderRightWidth={'1px'}
-                  borderColor={'mybg'}
-                >
+                <Th borderRightRadius={'lg'} borderColor={'mybg'} bg={'header'}>
                   <HeaderSorter
                     heading="TVL"
                     align="right"

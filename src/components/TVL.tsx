@@ -44,12 +44,18 @@ const TVL: React.FC = () => {
       gap="2"
       width="100%"
     >
-      <GridItem display="flex">
+      <GridItem
+        display="flex"
+        className="faded-purple-gradient"
+        borderRadius={'8px'}
+      >
         <Card
+          // className="faded-purple-gradient"
           width={'100%'}
           padding={'15px 30px'}
           color={'white'}
-          bg={'mycard'}
+          bg={'transparent'}
+          // bg={'mycard'}
           // borderWidth={'1px'}
           // borderColor={'color_3'}
         >
@@ -71,12 +77,18 @@ const TVL: React.FC = () => {
         </Card>
       </GridItem>
 
-      <GridItem display="flex">
+      <GridItem
+        display="flex"
+        className="faded-purple-gradient"
+        borderRadius={'8px'}
+      >
         <Card
+          // className="faded-purple-gradient"
           width={'100%'}
           padding={'15px 30px'}
           color={'white'}
-          bg={'mycard'}
+          bg={'transparent'}
+          // bg={'mycard'}
           // borderWidth={'1px'}
           // borderColor={'color_3'}
         >
@@ -96,12 +108,16 @@ const TVL: React.FC = () => {
         </Card>
       </GridItem>
 
-      <GridItem display="flex">
+      <GridItem
+        display="flex"
+        className="faded-purple-gradient"
+        borderRadius={'8px'}
+      >
         <Card
           width={'100%'}
           padding={'15px 30px'}
           color={'white'}
-          bg={'mycard'}
+          bg={'transparent'}
           // borderWidth={'1px'}
           // borderColor={'color_3'}
         >

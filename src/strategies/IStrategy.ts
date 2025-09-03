@@ -123,6 +123,17 @@ export interface IStrategySettings {
   isTransactionHistDisabled?: boolean;
 }
 
+export interface APYHistoryBlockInfo {
+  block: number;
+  timestamp: number;
+}
+
+export interface APYHistory {
+  block: number;
+  timestamp: number;
+  apy: number;
+}
+
 export interface AmountInfo {
   amount: Web3Number;
   usdValue: number;
@@ -212,6 +223,12 @@ export class IStrategyProps<T> {
 
   getUserTVL = async (user: string): Promise<AmountsInfo> => {
     throw new Error('getTVL: Not implemented');
+  };
+
+  getAPYHistory = async (
+    blocks: APYHistoryBlockInfo[],
+  ): Promise<APYHistory[]> => {
+    return [];
   };
 
   isLive() {

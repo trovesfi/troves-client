@@ -910,7 +910,7 @@ export function CombinedFilters({
         >
           <Text
             bg={'purple'}
-            color={'white'}
+            color={'black'}
             padding={'4px'}
             borderRadius={'4px'}
             fontSize={'10px'}

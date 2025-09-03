@@ -64,8 +64,8 @@ const HarvestTime: React.FC<HarvestTimeProps> = ({ strategy, balData }) => {
     <Flex
       width={'100%'}
       flexDirection={{ base: 'column', md: 'row' }}
-      bg={'mycard'}
       borderRadius={'lg'}
+      className="faded-purple-gradient "
     >
       <Flex width={'100%'} justifyContent="space-between">
         {!strategy.settings.hideHarvestInfo && (
@@ -176,15 +176,17 @@ const HarvestTime: React.FC<HarvestTimeProps> = ({ strategy, balData }) => {
               fontSize={'12px'}
               fontWeight={'400'}
               lineHeight={'100%'}
-              bg={'mycard'}
               width={'100%'}
               borderRadius={'lg'}
             >
               Total rewards harvested:{' '}
-              {getDisplayCurrencyAmount(
-                harvestTime?.data?.totalStrkHarvestedByContract.STRKAmount || 0,
-                2,
-              )}{' '}
+              <Text as="span" color="white" fontWeight={'bold'}>
+                {getDisplayCurrencyAmount(
+                  harvestTime?.data?.totalStrkHarvestedByContract.STRKAmount ||
+                    0,
+                  2,
+                )}{' '}
+              </Text>
               STRK
             </Text>
 
@@ -193,12 +195,13 @@ const HarvestTime: React.FC<HarvestTimeProps> = ({ strategy, balData }) => {
               fontSize={'12px'}
               fontWeight={'400'}
               lineHeight={'100%'}
-              bg={'mycard'}
               width={'100%'}
               borderRadius={'lg'}
             >
               Total number of times harvested:{' '}
-              {harvestTime?.data?.totalHarvestsByContract || '-'}
+              <Text as="span" color="white" fontWeight={'bold'}>
+                {harvestTime?.data?.totalHarvestsByContract || '-'}
+              </Text>
             </Text>
           </Flex>
         )}

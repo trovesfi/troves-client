@@ -35,6 +35,7 @@ const theme = extendTheme({
 
     highlight: '#303136',
     purple: '#9069F0',
+    purple_30p: '#CFACFA4D',
     purple_60p: '#6F5CA599',
     purple_hover: '#4C2CD7',
     purple_hover_2: '#C5A6FF',
@@ -44,22 +45,33 @@ const theme = extendTheme({
 
     header: '#1d1531',
 
+    table_header_bg: '#9069F033',
+
     badge_blue: '#002F6A',
     badge_green: '#016131',
 
     mybg: 'black', // dark blue
     bg_2: '#111113',
     bg_3: '#090910',
+    bg_4: '#010101',
 
     mycard: '#19191b',
     mycard_light: '#212121',
     mycard_light_2x: '#303136',
     mycard_dark: '#121212',
 
+    input_light: '#37373780',
+    list_item_bg: '#37373766',
+
+    text_grey: '#868898',
+    text_grey_60p: '#86889899',
+    text_grey_90p: '#868898E5',
     grey_text: '#B6B6B6',
+    grey_text_2: '#909090',
     text_primary: 'white',
     text_secondary: '#b2b3bd',
     text_secondary_2: '#D3D3D3',
+    text_black_70p: '#010101B2',
 
     yellow: '#EFDB72',
     yellow_2: '#FFA500',
@@ -73,6 +85,7 @@ const theme = extendTheme({
     light_green_30p: '#3EE5C24D',
 
     border_light: '#CFCFEA',
+    border_light_2: '#2D2D3D',
     border_light_3p: '#CFCFEA0D',
     border_light_30p: '#CFCFEA4D',
 
@@ -82,6 +95,7 @@ const theme = extendTheme({
     dark_bg: '#111119',
     purple_tint: '#CFCFEA',
     lavender_gray: '#B4B1BD',
+    border_grey: '#B3B3B326',
 
     text_subtle: '#a0a2b0',
     text_subtle_50p: '#a0a2b080',

@@ -88,6 +88,11 @@ const nextConfig = {
   },
   webpack(config, options) {
     if (options.isServer) config.devtool = 'source-map';
+    config.module.rules.push({
+      test: /\.svg$/,
+      issuer: /\.[jt]sx?$/,
+      use: ['@svgr/webpack'],
+    });
     return config;
   },
   async headers() {

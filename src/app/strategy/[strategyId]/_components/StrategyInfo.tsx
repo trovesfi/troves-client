@@ -3,12 +3,11 @@ import {
   AvatarGroup,
   Box,
   Flex,
-  Image,
   Link,
   Text,
   Tooltip,
 } from '@chakra-ui/react';
-import shield from '@/assets/shield.svg';
+import ShieldIcon from '@/assets/shield.svg';
 import { StrategyInfo } from '@/store/strategies.atoms';
 
 export function StrategyInfoComponent(props: { strategy: StrategyInfo<any> }) {
@@ -36,35 +35,33 @@ export function StrategyInfoComponent(props: { strategy: StrategyInfo<any> }) {
           />
         )}
       </AvatarGroup>
-      <Text
-        fontSize={{ base: '20px', md: '32px' }}
-        fontWeight={'600'}
-        color="white"
-      >
-        {strategy ? strategy.name : 'Strategy Not found'}
-      </Text>
-      {strategy.metadata.auditUrl && (
-        <Tooltip label={<Box>Audited. Click to view report.</Box>}>
-          <Box
-            display={'flex'}
-            alignItems={'center'}
-            justifyContent={'center'}
-            bg={'badge_green'}
-            width={'27px'}
-            height={'27px'}
-            padding={'3px 5px'}
-            borderRadius={'20px'}
-          >
-            <Link href={strategy.metadata.auditUrl} target="_blank">
-              <Image
-                src={shield.src}
-                alt="badge"
-                filter={'brightness(0) invert(0.8)'}
-              />
-            </Link>
-          </Box>
-        </Tooltip>
-      )}
+      <Flex alignItems="center" gap="4px">
+        <Text
+          fontSize={{ base: '20px', md: '32px' }}
+          fontWeight={'600'}
+          color="white"
+        >
+          {strategy ? strategy.name : 'Strategy Not found'}
+        </Text>
+        {strategy.metadata.auditUrl && (
+          <Tooltip label={<Box>Audited. Click to view report.</Box>}>
+            <Box
+              display={'flex'}
+              alignItems={'center'}
+              justifyContent={'center'}
+              bg={'badge_green'}
+              width={'27px'}
+              height={'27px'}
+              padding={'3px 5px'}
+              borderRadius={'20px'}
+            >
+              <Link href={strategy.metadata.auditUrl} target="_blank">
+                <ShieldIcon />
+              </Link>
+            </Box>
+          </Tooltip>
+        )}
+      </Flex>
     </Flex>
   );
 }

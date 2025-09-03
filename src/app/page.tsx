@@ -159,14 +159,12 @@ export default function Home() {
           bg="purple"
           color="color1"
           borderRadius="1px"
-          boxShadow={'0px 0px 8px 0px var(--chakra-colors-purple)'}
         />
         <TabPanels>
           <TabPanel
             bg="color_3"
             float={'left'}
             width={'100%'}
-            // borderWidth={'1px'}
             borderColor={'color_3'}
             borderRadius={'8px'}
             padding={'1rem 0'}
@@ -177,7 +175,6 @@ export default function Home() {
             bg="color_3"
             width={'100%'}
             float={'left'}
-            // borderWidth={'1px'}
             borderColor={'color_3'}
             borderRadius={'8px'}
             padding={'1rem 0'}

@@ -489,7 +489,7 @@ const AmountInput = forwardRef(
                 maxWidth={'200px'}
                 minWidth={'140px'}
                 width={'100%'}
-                bg={'mycard_light'}
+                bg={'input_light'}
                 color="text_primary"
                 fontSize={'16px'}
                 fontWeight={'500'}
@@ -558,7 +558,7 @@ const AmountInput = forwardRef(
           min={0}
           max={parseFloat(maxAmount.toEtherStr())}
           color={'white'}
-          bg={'mycard_light'}
+          bg={'input_light'}
           borderRadius={'lg'}
           onChange={(valueStr) => {
             const newAmount =

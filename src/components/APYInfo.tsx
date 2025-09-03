@@ -75,10 +75,10 @@ export function APYInfo(props: {
         <Stat
           display={'flex'}
           flexDirection={'column'}
-          bg={'mycard'}
           borderRadius={'md'}
           padding={'16px'}
           gap={'10px'}
+          className="apy-gradient"
         >
           <StatLabel
             color={'border_light'}

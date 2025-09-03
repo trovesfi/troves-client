@@ -36,7 +36,7 @@ export default class MyNumber {
   }
 
   toEtherStr() {
-    return ethers.formatUnits(this.bigNumber.toFixed(), this.decimals);
+    return ethers.formatUnits(this?.bigNumber.toFixed(), this.decimals);
   }
 
   toFixedStr(decimals: number) {

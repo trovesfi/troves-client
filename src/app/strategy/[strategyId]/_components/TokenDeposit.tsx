@@ -22,6 +22,7 @@ export function TokenDeposit(props: TokenDepositProps) {
   const { strategy } = props;
   return (
     <Tabs
+      bg="transparent"
       position="relative"
       variant="unstyled"
       width={'100%'}
@@ -32,11 +33,11 @@ export function TokenDeposit(props: TokenDepositProps) {
       <TabList borderRadius={'8px'}>
         <Tab
           width={'100%'}
-          bg="mycard"
-          color="text_secondary"
+          color="text_black_70p"
           fontSize={'14px'}
           fontWeight={'700'}
           borderTopLeftRadius={'8px'}
+          bg="purple_30p"
           _selected={{ bg: 'purple', color: 'black' }}
           onClick={() => {
             // mixpanel.track('All pools clicked')
@@ -46,11 +47,11 @@ export function TokenDeposit(props: TokenDepositProps) {
         </Tab>
         <Tab
           width={'100%'}
-          bg="mycard"
-          color="text_secondary"
           fontSize={'14px'}
           fontWeight={'700'}
           borderTopRightRadius={'8px'}
+          bg="purple_30p"
+          color="text_black_70p"
           _selected={{ bg: 'purple', color: 'black' }}
           onClick={() => {
             // mixpanel.track('Strategies opened')
@@ -64,6 +65,7 @@ export function TokenDeposit(props: TokenDepositProps) {
           width={'100%'}
           padding={'20px 16px'}
           borderBottomLeftRadius={'8px'}
+          borderBottomRightRadius={'8px'}
         >
           {tabIndex == 0 && (
             <>
@@ -99,6 +101,7 @@ export function TokenDeposit(props: TokenDepositProps) {
         <TabPanel
           width={'100%'}
           padding={'20px 16px'}
+          borderBottomLeftRadius={'8px'}
           borderBottomRightRadius={'8px'}
         >
           {tabIndex == 1 && (

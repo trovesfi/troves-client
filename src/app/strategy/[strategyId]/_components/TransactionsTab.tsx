@@ -52,12 +52,12 @@ function DesktopTransactionHistory(props: { transactions: ITransaction[] }) {
             sx={{
               overflow: 'hidden',
               'border-collapse': 'separate',
-              'border-spacing': '0px 3px',
+              'border-spacing': '0px 5px',
             }}
           >
             <Thead
               display={{ base: 'none', md: 'table-header-group' }}
-              bg={'mycard_light'}
+              bg={'table_header_bg'}
             >
               <Tr>
                 <Th
@@ -67,6 +67,9 @@ function DesktopTransactionHistory(props: { transactions: ITransaction[] }) {
                   fontWeight={'600'}
                   textTransform={'capitalize'}
                   borderTopLeftRadius={'lg'}
+                  borderBottomLeftRadius={'lg'}
+                  borderRightWidth={'1px'}
+                  borderColor={'mybg'}
                 >
                   #
                 </Th>
@@ -75,6 +78,8 @@ function DesktopTransactionHistory(props: { transactions: ITransaction[] }) {
                   fontSize={'14px'}
                   fontWeight={'600'}
                   textTransform={'capitalize'}
+                  borderRightWidth={'1px'}
+                  borderColor={'mybg'}
                 >
                   Amount
                 </Th>
@@ -83,6 +88,8 @@ function DesktopTransactionHistory(props: { transactions: ITransaction[] }) {
                   fontSize={'14px'}
                   fontWeight={'600'}
                   textTransform={'capitalize'}
+                  borderRightWidth={'1px'}
+                  borderColor={'mybg'}
                 >
                   Transaction type
                 </Th>
@@ -91,6 +98,8 @@ function DesktopTransactionHistory(props: { transactions: ITransaction[] }) {
                   fontSize={'14px'}
                   fontWeight={'600'}
                   textTransform={'capitalize'}
+                  borderRightWidth={'1px'}
+                  borderColor={'mybg'}
                 >
                   Transaction hash
                 </Th>
@@ -100,6 +109,7 @@ function DesktopTransactionHistory(props: { transactions: ITransaction[] }) {
                   fontWeight={'600'}
                   textTransform={'capitalize'}
                   borderTopRightRadius={'lg'}
+                  borderBottomRightRadius={'lg'}
                 >
                   Time
                 </Th>
@@ -111,8 +121,17 @@ function DesktopTransactionHistory(props: { transactions: ITransaction[] }) {
                 const decimals = token?.decimals;
 
                 return (
-                  <Tr key={index} border={'none'} bg={'mycard_dark'}>
-                    <Td color={'text_secondary'} fontSize={'14px'}>
+                  <Tr
+                    key={index}
+                    className="faded-purple-gradient"
+                    border={'none'}
+                  >
+                    <Td
+                      color={'text_secondary'}
+                      fontSize={'14px'}
+                      borderTopLeftRadius="8px"
+                      borderBottomLeftRadius="8px"
+                    >
                       {index + 1}.
                     </Td>
                     <Td color={'text_secondary'} fontSize={'14px'}>
@@ -171,7 +190,12 @@ function DesktopTransactionHistory(props: { transactions: ITransaction[] }) {
                         </Link>
                       </Text>
                     </Td>
-                    <Td color={'text_secondary'} fontSize={'14px'}>
+                    <Td
+                      color={'text_secondary'}
+                      fontSize={'14px'}
+                      borderTopRightRadius="8px"
+                      borderBottomRightRadius="8px"
+                    >
                       <Text width={'100%'}>
                         {timeAgo(new Date(tx.timestamp * 1000))}
                       </Text>
@@ -266,59 +290,68 @@ export function TransactionsTab(props: TransactionsTabProps) {
   const { strategy, txHistory, isMobile } = props;
 
   return (
-    <Flex flexDirection="column" gap="16px" width="100%" padding={'16px'}>
-      <Box>
-        <Text fontSize="18px" color="white" fontWeight="600" mb={1}>
-          Transaction history
-        </Text>
-        {!strategy.settings.isTransactionHistDisabled && (
-          <Text fontSize="14px" color="border_light" mb={2}>
-            There may be delays in fetching data. If your transaction isn&apos;t
-            found, try again later.
+    <Box background="black">
+      <Flex
+        maxWidth={'1152px'}
+        margin={'0 auto'}
+        flexDirection="column"
+        gap="16px"
+        width="100%"
+        padding={'32px 0px'}
+      >
+        <Box>
+          <Text fontSize="18px" color="white" fontWeight="600" mb={1}>
+            Transaction history
           </Text>
-        )}
-      </Box>
-      {address ? (
-        strategy.settings.isTransactionHistDisabled ? (
+          {!strategy.settings.isTransactionHistDisabled && (
+            <Text fontSize="14px" color="border_light" mb={2}>
+              There may be delays in fetching data. If your transaction
+              isn&apos;t found, try again later.
+            </Text>
+          )}
+        </Box>
+        {address ? (
+          strategy.settings.isTransactionHistDisabled ? (
+            <Text
+              fontSize={'14px'}
+              textAlign={'center'}
+              color="text_secondary"
+              marginTop={'20px'}
+              padding="16px"
+              bg="mycard"
+              borderRadius={'lg'}
+            >
+              Transaction history is not available for this strategy yet. If
+              enabled in future, will include the entire history.
+            </Text>
+          ) : txHistory.findManyInvestment_flows.length !== 0 ? (
+            isMobile ? (
+              <MobileTransactionHistory
+                transactions={txHistory.findManyInvestment_flows}
+              />
+            ) : (
+              <DesktopTransactionHistory
+                transactions={txHistory.findManyInvestment_flows}
+              />
+            )
+          ) : (
+            <Text fontSize={'14px'} textAlign={'center'} color="text_secondary">
+              No transactions found
+            </Text>
+          )
+        ) : (
           <Text
             fontSize={'14px'}
             textAlign={'center'}
             color="text_secondary"
-            marginTop={'20px'}
             padding="16px"
             bg="mycard"
             borderRadius={'lg'}
           >
-            Transaction history is not available for this strategy yet. If
-            enabled in future, will include the entire history.
+            Connect your wallet to view transaction history
           </Text>
-        ) : txHistory.findManyInvestment_flows.length !== 0 ? (
-          isMobile ? (
-            <MobileTransactionHistory
-              transactions={txHistory.findManyInvestment_flows}
-            />
-          ) : (
-            <DesktopTransactionHistory
-              transactions={txHistory.findManyInvestment_flows}
-            />
-          )
-        ) : (
-          <Text fontSize={'14px'} textAlign={'center'} color="text_secondary">
-            No transactions found
-          </Text>
-        )
-      ) : (
-        <Text
-          fontSize={'14px'}
-          textAlign={'center'}
-          color="text_secondary"
-          padding="16px"
-          bg="mycard"
-          borderRadius={'lg'}
-        >
-          Connect your wallet to view transaction history
-        </Text>
-      )}
-    </Flex>
+        )}
+      </Flex>
+    </Box>
   );
 }

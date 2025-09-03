@@ -4,15 +4,14 @@ import {
   Flex,
   Text,
   Link,
-  Image,
   IconButton,
   useDisclosure,
   Container,
   Grid,
 } from '@chakra-ui/react';
-import tg from '@/assets/tg.svg';
-import x from '@/assets/x.svg';
-import fulllogo from '@public/fulllogo.png';
+import TgIcon from '@/assets/tg.svg';
+import XIxon from '@/assets/x.svg';
+import FullLogoIcon from '@public/fulllogo.svg';
 import CONSTANTS from '@/constants';
 
 const footerLinks = [
@@ -64,13 +63,13 @@ const socialLinks = [
   //   gradient: 'mycard_light',
   // },
   {
-    icon: tg.src,
+    icon: <TgIcon alt="Telegram" />,
     label: 'Telegram',
     href: CONSTANTS.COMMUNITY_TG,
     gradient: 'mycard_light',
   },
   {
-    icon: x.src,
+    icon: <XIxon alt="Twitter" />,
     label: 'Twitter',
     href: 'https://troves.fi/twitter',
     gradient: 'mycard_light',
@@ -81,7 +80,7 @@ const Footer: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Container width={'100%'} bg="mycard_dark">
+    <Container width={'100%'} bg="mycard_dark" marginTop="100px">
       <Box
         width={'100%'}
         maxWidth="1152px"
@@ -99,11 +98,7 @@ const Footer: React.FC = () => {
             align={{ base: 'center', md: 'flex-start' }}
             minW="220px"
           >
-            <Image
-              src={fulllogo.src}
-              alt="logo"
-              height={{ base: '35px', md: '50px' }}
-            />
+            <FullLogoIcon width={100} alt="logo" />
           </Flex>
 
           <Grid
@@ -179,7 +174,7 @@ const Footer: React.FC = () => {
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
-                  icon={<Image src={s.icon} alt={s.label} />}
+                  icon={s.icon}
                   target="_blank"
                   rel="noopener noreferrer"
                   borderRadius="full"

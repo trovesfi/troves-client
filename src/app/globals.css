@@ -160,6 +160,57 @@ body {
   );
 }
 
+.strategy-page-gradient {
+  background: linear-gradient(
+      0deg,
+      rgba(33, 33, 33, 0.35),
+      rgba(33, 33, 33, 0.35)
+    ),
+    linear-gradient(
+      288.17deg,
+      rgba(144, 105, 240, 0.2) -123.96%,
+      rgba(33, 33, 33, 0.2) 101.38%
+    );
+}
+
+.apy-gradient {
+  background: linear-gradient(
+      0deg,
+      rgba(33, 33, 33, 0.35),
+      rgba(33, 33, 33, 0.35)
+    ),
+    linear-gradient(
+      326.73deg,
+      rgba(144, 105, 240, 0.5) -541.23%,
+      rgba(33, 33, 33, 0.4) 92.85%
+    );
+}
+
+.holdings-gradient {
+  background: linear-gradient(
+      0deg,
+      rgba(33, 33, 33, 0.35),
+      rgba(33, 33, 33, 0.35)
+    ),
+    linear-gradient(
+      326.73deg,
+      rgba(144, 105, 240, 0.5) -541.23%,
+      rgba(33, 33, 33, 0.4) 92.85%
+    );
+}
+
+.faded-purple-gradient {
+  background: linear-gradient(
+      0deg,
+      rgba(33, 33, 33, 0.35),
+      rgba(33, 33, 33, 0.35)
+    ),
+    linear-gradient(
+      326.73deg,
+      rgba(144, 105, 240, 0.5) -541.23%,
+      rgba(33, 33, 33, 0.4) 92.85%
+    );
+}
 .connect-button-gradient {
   background: linear-gradient(93.94deg, #9069f0 3.22%, #4a14cd 101.67%);
 }

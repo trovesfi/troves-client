@@ -1,6 +1,5 @@
 import { ChevronDownIcon, EmailIcon } from '@chakra-ui/icons';
 import {
-  Avatar,
   Box,
   Button,
   Center,
@@ -24,7 +23,7 @@ import {
 } from 'starknetkit';
 
 import argentMobile from '@/assets/argentMobile.svg';
-import tg from '@/assets/tg.svg';
+import TgIcon from '@/assets/tg.svg';
 import CONSTANTS from '@/constants';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { getERC20Balance } from '@/store/balance.atoms';
@@ -39,7 +38,7 @@ import {
   standariseAddress,
   truncate,
 } from '@/utils';
-import fulllogo from '@public/fulllogo.svg';
+import FullLogoIcon from '@public/fulllogo.svg';
 import {
   InjectedConnector,
   useAccount,
@@ -299,11 +298,7 @@ export default function Navbar(props: NavbarProps) {
       >
         <Flex width={'100%'} gap={2} justifyContent={'space-between'}>
           <Link href="/" margin="auto 100px auto 0" textAlign={'left'}>
-            <Image
-              src={fulllogo.src}
-              alt="logo"
-              height={{ base: '35px', md: '50px' }}
-            />
+            <FullLogoIcon width={100} alt="logo" />
             {/* <Text fontSize={'30px'} color={'purple'} fontWeight={'bold'}>
               Troves
             </Text> */}
@@ -407,18 +402,7 @@ export default function Navbar(props: NavbarProps) {
                   variant={'ghost'}
                   borderColor={'color2'}
                   display={{ base: 'block', md: 'none' }}
-                  icon={
-                    <Avatar
-                      size="sm"
-                      bg="purple"
-                      name="T G"
-                      color="text_primary"
-                      src={tg.src}
-                      _hover={{
-                        bg: 'purple_hover_2',
-                      }}
-                    />
-                  }
+                  icon={<TgIcon style={{ width: 8, height: 8 }} />}
                 />
                 <Button
                   color="purple"
@@ -427,15 +411,7 @@ export default function Navbar(props: NavbarProps) {
                   borderWidth={'0'}
                   fontSize="14px"
                   fontWeight="400"
-                  leftIcon={
-                    <Avatar
-                      size="xs"
-                      bg="highlight"
-                      color="black"
-                      name="T G"
-                      src={tg.src}
-                    />
-                  }
+                  leftIcon={<TgIcon width={24} height={24} />}
                   _hover={{
                     bg: 'purple_hover_2',
                     color: 'black',

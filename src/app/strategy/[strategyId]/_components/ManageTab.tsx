@@ -14,23 +14,26 @@ export function ManageTab(props: ManageTabProps) {
   const { strategy, isMobile } = props;
 
   return (
-    <Flex
-      padding={'24px 0px'}
-      gap={'2'}
-      direction={{ base: 'column-reverse', md: 'row' }}
-    >
+    <Box background="black">
       <Flex
-        width={'100%'}
-        flexDirection={'column'}
-        bg="mycard_dark"
-        gap={'16px'}
-        padding={'16px'}
-        borderRadius={'lg'}
+        maxWidth={'1152px'}
+        margin={'0 auto'}
+        padding={'32px 0px'}
+        gap={'2'}
+        direction={{ base: 'column-reverse', md: 'row' }}
       >
-        <Text fontSize={'24px'} fontWeight={'600'} color={'text_secondary'}>
-          How does it work?
-        </Text>
-        {/* <UnorderedList
+        <Flex
+          width={'100%'}
+          flexDirection={'column'}
+          gap={'16px'}
+          padding={'16px'}
+          borderRadius={'lg'}
+          className="faded-purple-gradient "
+        >
+          <Text fontSize={'24px'} fontWeight={'600'} color={'text_secondary'}>
+            How does it work?
+          </Text>
+          {/* <UnorderedList
           fontSize={'14px'}
           fontWeight={'400'}
           color={'text_secondary'}
@@ -50,12 +53,12 @@ export function ManageTab(props: ManageTabProps) {
           </ListItem>
           <ListItem>Withdraw anytime by redeeming your NFT for USDC.</ListItem>
         </UnorderedList> */}
-        <Box color={'text_secondary'} fontSize={'14px'}>
-          {strategy.description}
-        </Box>
+          <Box color={'text_secondary'} fontSize={'14px'}>
+            {strategy.description}
+          </Box>
 
-        <ContractDetails strategy={strategy} />
-        {/* <VStack alignItems={'flex-start'} gap={'8px'}>
+          <ContractDetails strategy={strategy} />
+          {/* <VStack alignItems={'flex-start'} gap={'8px'}>
           <Text fontSize={'24px'} fontWeight={'600'} color={'white'}>
             Risks
           </Text>
@@ -74,23 +77,24 @@ export function ManageTab(props: ManageTabProps) {
           ))}
           </Box>
         </VStack> */}
-      </Flex>
+        </Flex>
 
-      <Flex
-        width={{ base: '100%', md: '50%' }}
-        minWidth={{ base: '100%', md: '450px' }}
-        maxWidth={{ base: '100%', md: '500px' }}
-        borderRadius={'lg'}
-        bg="mycard_dark"
-      >
-        {!strategy ||
-          (strategy.isSingleTokenDepositView && (
-            <TokenDeposit strategy={strategy} isDualToken={false} />
-          ))}
-        {strategy && !strategy.isSingleTokenDepositView && (
-          <TokenDeposit strategy={strategy} isDualToken={true} />
-        )}
+        <Flex
+          width={{ base: '100%', md: '50%' }}
+          minWidth={{ base: '100%', md: '450px' }}
+          maxWidth={{ base: '100%', md: '500px' }}
+          borderRadius={'lg'}
+          className="faded-purple-gradient"
+        >
+          {!strategy ||
+            (strategy.isSingleTokenDepositView && (
+              <TokenDeposit strategy={strategy} isDualToken={false} />
+            ))}
+          {strategy && !strategy.isSingleTokenDepositView && (
+            <TokenDeposit strategy={strategy} isDualToken={true} />
+          )}
+        </Flex>
       </Flex>
-    </Flex>
+    </Box>
   );
 }

@@ -417,10 +417,8 @@ function InternalDeposit(props: DepositProps) {
           </Flex>
           <Progress
             colorScheme="teal"
-            bg="border_light_3p"
+            bg="bg_4"
             borderRadius={'6px'}
-            borderWidth={'1px'}
-            borderColor={'light_green_30p'}
             value={
               (100 *
                 (Number(tvlInfo.data?.amounts[0].amount.toFixed(2)) ||

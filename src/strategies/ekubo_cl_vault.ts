@@ -1,6 +1,8 @@
 import CONSTANTS from '@/constants';
 import {
   AmountsInfo,
+  APYHistory,
+  APYHistoryBlockInfo,
   DepositActionInputs,
   IStrategy,
   IStrategyActionHook,
@@ -283,6 +285,17 @@ export class EkuboClStrategy extends IStrategy<CLVaultStrategySettings> {
 
     this.status = StrategyStatus.SOLVED;
   }
+
+  getAPYHistory = async (blocks: APYHistoryBlockInfo[]) => {
+    const apyHistory: APYHistory[] = [];
+
+    for (const block of blocks) {
+      const apy = await this.clVault.netAPY(block.block, 16000);
+      apyHistory.push({ ...block, apy });
+    }
+
+    return apyHistory;
+  };
 
   getEkuboStratBalanceAtom = (underlyingToken: TokenInfo) => {
     const holdingBalAtom = getBalanceAtom(this.holdingTokens[0], atom(true));
